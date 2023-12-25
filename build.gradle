@@ -2,6 +2,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "7.1.0"
     id 'java-library'
     id 'maven-publish'
+    id 'application'
 }
 test {
     useJUnitPlatform()
@@ -9,6 +10,7 @@ test {
 
 group = 'ru.whitebeef'
 version = '1.0.5'
+mainClassName = 'ru.whitebeef.pepebot.PepeBot'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -95,11 +97,7 @@ jar {
     delete destinationDir.toPath().toString() + '\\' + jarName
     delete destinationDir.toPath().toString() + '\\' + versionJarName
 
-    manifest {
-        attributes(
-                'Main-Class': 'ru.whitebeef.pepebot.PepeBot'
-        )
-    }
+
 
     destinationDirectory.set(destinationDir)
     archiveFileName.set(jarName)

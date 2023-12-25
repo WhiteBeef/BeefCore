@@ -42,10 +42,7 @@ public class PluginRegistry {
         try {
             Path pluginsFolderPath = Path.of(PepeBot.getInstance().getMainFolder() + File.separator + folder);
             if (!Files.isDirectory(pluginsFolderPath)) {
-                return;
-            }
-            if (!pluginsFolderPath.toFile().exists()) {
-                pluginsFolderPath.toFile().createNewFile();
+                Files.createDirectories(pluginsFolderPath);
             }
 
             File[] files = pluginsFolderPath.toFile().listFiles((dir, name) -> name.toLowerCase().endsWith(".jar"));

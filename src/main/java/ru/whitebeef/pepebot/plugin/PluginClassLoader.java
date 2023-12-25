@@ -1,9 +1,10 @@
 package ru.whitebeef.pepebot.plugin;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import lombok.Getter;
 import org.apache.logging.log4j.core.util.IOUtils;
 import org.jetbrains.annotations.NotNull;
-import ru.whitebeef.pepebot.utils.GsonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,12 +46,13 @@ public class PluginClassLoader extends URLClassLoader {
         super(new URL[0], ClassLoader.class.getClassLoader());
         this.registry = registry;
         this.jarFile = new JarFile(filePath.toFile());
-        this.info = GsonUtils.getGson().fromJson(IOUtils
-                .toString(new InputStreamReader(jarFile.getInputStream(jarFile.getEntry("plugin.json")))), PluginInfoImpl.class);
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(jarFile.getInputStream(jarFile.getEntry("plugin.json"))));
+        this.info = new PluginInfoImpl(jsonObject);
         this.filePath = filePath;
         this.dataFolderPath = this.filePath.getParent().resolve(this.info.getName());
         this.url = filePath.toUri().toURL();
         this.addURL(this.url);
+
     }
 
 

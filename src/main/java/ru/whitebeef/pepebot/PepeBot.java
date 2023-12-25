@@ -15,6 +15,8 @@ import ru.whitebeef.pepebot.command.defaultcommands.HelpCommand;
 import ru.whitebeef.pepebot.plugin.PluginRegistry;
 
 import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -67,9 +69,12 @@ public class PepeBot {
         instance = this;
 
         pluginRegistry = new PluginRegistry();
-        pluginRegistry.registerPlugins("plugins");
 
-        mainFolder = new File(PepeBot.class.getProtectionDomain().getCodeSource().getLocation().toString());
+        try {
+            mainFolder = Paths.get(PepeBot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toFile().getParentFile();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
         commandManager = new CommandManager();
 
         registerCommands();
