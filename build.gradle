@@ -1,0 +1,161 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.0"
+    id 'java-library'
+    id 'maven-publish'
+}
+test {
+    useJUnitPlatform()
+}
+
+group = 'ru.whitebeef'
+version = '1.0.5'
+
+compileJava.options.encoding = 'UTF-8'
+
+def destinationDir = file("C:\\PepeBot\\plugins\\$project.name")
+def jarName = project.name + '.jar';
+def versionJarName = project.name + '-' + project.version + '.jar';
+
+def mavenRepoUsername = System.getenv("mvn-repo-username")
+def mavenRepoPassword = System.getenv("mvn-repo-token")
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sonatype'
+        url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name = 'codemc-repo'
+        url = 'https://repo.codemc.io/repository/maven-public/'
+    }
+    maven {
+        name = 'whitebeef-repository'
+        url = 'https://mvn.whitebeef.ru/releases'
+    }
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:20.1.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'org.jline:jline:3.23.0'
+    implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    implementation 'com.google.code.gson:gson:2.7'
+
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+javadoc {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release = targetJavaVersion
+    }
+}
+
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+jar {
+    delete destinationDir.toPath().toString() + '\\' + jarName
+    delete destinationDir.toPath().toString() + '\\' + versionJarName
+
+    manifest {
+        attributes(
+                'Main-Class': 'ru.whitebeef.pepebot.PepeBot'
+        )
+    }
+
+    destinationDirectory.set(destinationDir)
+    archiveFileName.set(jarName)
+
+    doLast {
+        copy {
+            from destinationDir.toPath()
+            into destinationDir.toPath()
+            rename { versionJarName }
+            duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+        }
+    }
+}
+publishing {
+    publications {
+        myLib(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "whitebeef-repository"
+            url = "https://mvn.whitebeef.ru/private"
+            credentials {
+                username = mavenRepoUsername
+                password = mavenRepoPassword
+            }
+        }
+    }
+}
+
+shadowJar {
+    delete destinationDir.toPath().toString() + '\\' + jarName
+    delete destinationDir.toPath().toString() + '\\' + versionJarName
+
+    dependencies {
+        include dependency("org.jetbrains:annotations")
+        include dependency("org.junit.jupiter:junit-jupiter-api")
+        include dependency("org.junit.jupiter:junit-jupiter-engine")
+        include dependency("org.jline:jline")
+        include dependency("org.apache.logging.log4j:log4j-api")
+        include dependency("org.apache.logging.log4j:log4j-core")
+        include dependency("com.google.code.gson:gson")
+    }
+    destinationDirectory.set(destinationDir)
+    archiveFileName.set(jarName)
+
+    doLast {
+        copy {
+            from destinationDir.toPath()
+            into destinationDir.toPath()
+            rename { versionJarName }
+            duplicatesStrategy(DuplicatesStrategy.INCLUDE)
+        }
+    }
+
+}
+
+apply plugin: 'java-library'
