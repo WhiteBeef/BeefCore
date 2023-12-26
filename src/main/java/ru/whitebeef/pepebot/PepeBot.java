@@ -10,8 +10,11 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import ru.whitebeef.pepebot.command.AbstractCommand;
-import ru.whitebeef.pepebot.command.CommandManager;
+import ru.whitebeef.pepebot.command.Alias;
+import ru.whitebeef.pepebot.command.CommandRegistry;
+import ru.whitebeef.pepebot.command.SimpleCommand;
 import ru.whitebeef.pepebot.command.defaultcommands.HelpCommand;
+import ru.whitebeef.pepebot.plugin.Plugin;
 import ru.whitebeef.pepebot.plugin.PluginRegistry;
 
 import java.io.File;
@@ -41,7 +44,7 @@ public class PepeBot {
 
                 String[] commandArray = userInput.split(" ");
 
-                AbstractCommand command = PepeBot.getInstance().getCommandManager().getCommand(commandArray[0]);
+                AbstractCommand command = PepeBot.getInstance().getCommandRegistry().getCommand(commandArray[0]);
                 if (command == null) {
                     logger.warn("Команда '" + userInput + "' не найдена!");
                     continue;
@@ -58,7 +61,7 @@ public class PepeBot {
     @Getter
     private final File mainFolder;
     @Getter
-    private final CommandManager commandManager;
+    private final CommandRegistry commandRegistry;
 
     @Getter
     private final PluginRegistry pluginRegistry;
@@ -75,10 +78,13 @@ public class PepeBot {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        commandManager = new CommandManager();
+        commandRegistry = new CommandRegistry();
 
         registerCommands();
         pluginRegistry.registerPlugins("plugins");
+
+        pluginRegistry.enablePlugins();
+
     }
 
     private void registerCommands() {
@@ -89,12 +95,24 @@ public class PepeBot {
                         .setUsageMessage("help")
                         .build());
         abstractCommands.add(
-                AbstractCommand.builder("help1", HelpCommand.class)
-                        .setDescription("Команда для просмотра доступных команд1")
-                        .setUsageMessage("help1")
+                AbstractCommand.builder("stop", SimpleCommand.class)
+                        .setDescription("Остановить сервер")
+                        .setUsageMessage("stop")
+                        .build());
+        abstractCommands.add(
+                AbstractCommand.builder("plugins", SimpleCommand.class)
+                        .addAlias(Alias.of("pl", false))
+                        .setDescription("Показать список плагинов")
+                        .setUsageMessage("plugins")
+                        .setOnCommand((args) -> {
+                            logger.info("Plugin list:");
+                            for (Plugin plugin : pluginRegistry.getLoadedPlugins()) {
+                                logger.info(plugin.getInfo().getName() + ": " + (plugin.isEnabled() ? "✓" : "×"));
+                            }
+                        })
                         .build());
 
-        abstractCommands.forEach(commandManager::registerCommandWithoutPlugin);
+        abstractCommands.forEach(commandRegistry::registerCommand);
     }
 
 }

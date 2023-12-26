@@ -3,6 +3,7 @@ package ru.whitebeef.pepebot.plugin;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import ru.whitebeef.pepebot.PepeBot;
 import ru.whitebeef.pepebot.utils.GsonUtils;
@@ -24,13 +25,15 @@ public abstract class BeefPlugin implements Plugin {
     @Getter
     private final PluginClassLoader pluginClassLoader;
 
+    @Getter
+    @Setter
+    private boolean enabled;
 
     public BeefPlugin(@NotNull PluginInfo info, PluginClassLoader pluginClassLoader) {
         this.info = info;
         this.dataFolder = new File(PepeBot.class.getProtectionDomain().getCodeSource().getLocation().toString()
                 + "plugins" + File.separator + info.getName() + File.separator);
         this.pluginClassLoader = pluginClassLoader;
-
     }
 
     @Override

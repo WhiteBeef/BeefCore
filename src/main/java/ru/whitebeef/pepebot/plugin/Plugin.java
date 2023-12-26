@@ -20,6 +20,10 @@ public interface Plugin {
     @NotNull
     JsonElement getConfig();
 
+    boolean isEnabled();
+
+    void setEnabled(boolean enable);
+
     void onLoad();
 
     void onEnable();

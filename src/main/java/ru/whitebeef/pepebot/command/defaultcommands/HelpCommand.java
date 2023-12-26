@@ -20,7 +20,7 @@ public class HelpCommand extends AbstractCommand {
     @Override
     public void onCommand(String[] args) {
         log.info("Help:");
-        for (AbstractCommand command : PepeBot.getInstance().getCommandManager().getRegisteredCommands()) {
+        for (AbstractCommand command : PepeBot.getInstance().getCommandRegistry().getRegisteredCommands()) {
             log.info(command.getName() + ": " + command.getDescription() + " - " + command.getUsageMessage());
         }
     }

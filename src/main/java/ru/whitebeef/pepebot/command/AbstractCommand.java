@@ -23,7 +23,7 @@ public class AbstractCommand {
     private static final Map<Plugin, List<AbstractCommand>> registeredCommands = new WeakHashMap<>();
 
     public static void unregisterAllCommands(Plugin plugin) {
-        registeredCommands.getOrDefault(plugin, new ArrayList<>()).forEach(abstractCommand -> abstractCommand.unregister(plugin));
+        registeredCommands.getOrDefault(plugin, new ArrayList<>()).forEach(AbstractCommand::unregister);
     }
 
     public static Builder builder(String name, Class<? extends AbstractCommand> clazz) {
@@ -161,13 +161,13 @@ public class AbstractCommand {
     }
 
 
-    public void register(Plugin plugin) {
+    public void register() {
         loadTree(this, this);
-        PepeBot.getInstance().getCommandManager().registerCommand(plugin, this);
+        PepeBot.getInstance().getCommandRegistry().registerCommand(this);
     }
 
-    public void unregister(Plugin plugin) {
-        PepeBot.getInstance().getCommandManager().unregisterCommand(plugin, this);
+    public void unregister() {
+        PepeBot.getInstance().getCommandRegistry().unregisterCommand(this);
     }
 
     public static class Builder {
@@ -177,7 +177,6 @@ public class AbstractCommand {
         private final List<Alias> aliases = new ArrayList<>();
         private Consumer<String[]> onCommand = null;
         private Function<String[], List<String>> onTabComplete = null;
-        private String permission = "";
         private String description = "";
         private String usageMessage = "";
         private int minArgsCount = 0;
@@ -195,8 +194,13 @@ public class AbstractCommand {
             return this;
         }
 
-        public Builder setPermission(String permission) {
-            this.permission = permission;
+        public Builder setOnCommand(Consumer<String[]> onCommand) {
+            this.onCommand = onCommand;
+            return this;
+        }
+
+        public Builder setOnTabComplete(Function<String[], List<String>> onTabComplete) {
+            this.onTabComplete = onTabComplete;
             return this;
         }
 

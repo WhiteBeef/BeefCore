@@ -1,5 +1,7 @@
 package ru.whitebeef.pepebot.plugin;
 
+import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.whitebeef.pepebot.PepeBot;
 import ru.whitebeef.pepebot.exceptions.plugin.PluginAlreadyLoadedException;
@@ -7,9 +9,13 @@ import ru.whitebeef.pepebot.exceptions.plugin.PluginAlreadyLoadedException;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+@Log4j2
 public class PluginRegistry {
 
     protected final Map<String, Plugin> plugins = new HashMap<>();
@@ -21,9 +27,9 @@ public class PluginRegistry {
         if (plugins.containsKey(lowerPluginName)) {
             throw new PluginAlreadyLoadedException(info);
         }
-        Plugin plugin = null;
+        Plugin plugin;
         try {
-            plugin = (Plugin) Class.forName(info.getMainClassPath()).getConstructor(PluginInfo.class, PluginClassLoader.class).newInstance(info, pluginClassLoader);
+            plugin = (Plugin) pluginClassLoader.findClass(info.getMainClassPath()).getConstructor(PluginInfo.class, PluginClassLoader.class).newInstance(info, pluginClassLoader);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -37,6 +43,10 @@ public class PluginRegistry {
         return plugins.get(name);
     }
 
+    @NotNull
+    public Collection<Plugin> getLoadedPlugins() {
+        return plugins.values();
+    }
 
     public void registerPlugins(String folder) {
         try {
@@ -57,4 +67,39 @@ public class PluginRegistry {
         }
     }
 
+
+    public void enablePlugins() {
+        for (Plugin plugin : plugins.values()) {
+            enablePlugin(plugin, new HashSet<>());
+        }
+    }
+
+    private boolean enablePlugin(Plugin plugin, Set<String> used) {
+        PluginInfo info = plugin.getInfo();
+        used.add(info.getName());
+        boolean dependsOn = true;
+
+        for (String pluginName : info.getDepends()) {
+            Plugin pl = plugins.get(pluginName);
+            if (pl.isEnabled()) {
+                continue;
+            }
+            if (used.contains(pluginName)) {
+                throw new RuntimeException("Обнаружена кольцевая зависимость: " + info.getName() + " <-> " + pluginName);
+            }
+            try {
+                enablePlugin(pl, used);
+            } catch (Exception e) {
+                dependsOn = false;
+            }
+        }
+
+        if (dependsOn) {
+            plugin.onEnable();
+            plugin.setEnabled(true);
+        } else {
+            log.error("Ошибка при загрузки плагина " + plugin.getInfo().getName());
+        }
+        return true;
+    }
 }
