@@ -1,4 +1,4 @@
-package ru.whitebeef.pepebot.utils;
+package ru.whitebeef.meridianbot.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

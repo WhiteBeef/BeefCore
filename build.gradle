@@ -3,6 +3,9 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'application'
+    id "org.hibernate.orm" version "6.4.1.Final"
+    id 'org.springframework.boot' version '3.2.1'
+    id 'io.spring.dependency-management' version '1.1.4'
 }
 test {
     useJUnitPlatform()
@@ -10,11 +13,11 @@ test {
 
 group = 'ru.whitebeef'
 version = '1.1.0'
-mainClassName = 'ru.whitebeef.pepebot.PepeBot'
+mainClassName = 'ru.whitebeef.meridianbot.MeridianBot'
 
 compileJava.options.encoding = 'UTF-8'
 
-def destinationDir = file("C:\\PepeBot\\plugins\\$project.name")
+def destinationDir = file("C:\\MeridianBot\\$project.name")
 def jarName = project.name + '.jar';
 def versionJarName = project.name + '-' + project.version + '.jar';
 
@@ -43,6 +46,9 @@ repositories {
     maven {
         url "https://plugins.gradle.org/m2/"
     }
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
 }
 
 dependencies {
@@ -60,7 +66,11 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     implementation 'com.google.code.gson:gson:2.7'
-
+    implementation 'net.dv8tion:JDA:5.0.0-beta.12'
+    implementation 'org.hibernate.orm:hibernate-gradle-plugin:6.4.1.Final'
+    implementation 'org.springframework.data:spring-data-jpa:3.2.1'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.5'
+    implementation 'com.github.gwenn:sqlite-dialect:0.1.2'
 }
 
 def targetJavaVersion = 17
@@ -94,9 +104,9 @@ processResources {
 }
 
 jar {
+    enabled = false
     delete destinationDir.toPath().toString() + '\\' + jarName
     delete destinationDir.toPath().toString() + '\\' + versionJarName
-
 
 
     destinationDirectory.set(destinationDir)
@@ -113,7 +123,7 @@ jar {
 }
 publishing {
     publications {
-        myLib(MavenPublication) {
+        myib(MavenPublication) {
             from components.java
         }
     }
@@ -129,31 +139,7 @@ publishing {
     }
 }
 
-shadowJar {
-    delete destinationDir.toPath().toString() + '\\' + jarName
-    delete destinationDir.toPath().toString() + '\\' + versionJarName
 
-    dependencies {
-        include dependency("org.jetbrains:annotations")
-        include dependency("org.junit.jupiter:junit-jupiter-api")
-        include dependency("org.junit.jupiter:junit-jupiter-engine")
-        include dependency("org.jline:jline")
-        include dependency("org.apache.logging.log4j:log4j-api")
-        include dependency("org.apache.logging.log4j:log4j-core")
-        include dependency("com.google.code.gson:gson")
-    }
-    destinationDirectory.set(destinationDir)
-    archiveFileName.set(jarName)
-
-    doLast {
-        copy {
-            from destinationDir.toPath()
-            into destinationDir.toPath()
-            rename { versionJarName }
-            duplicatesStrategy(DuplicatesStrategy.INCLUDE)
-        }
-    }
-
-}
 
 apply plugin: 'java-library'
+apply plugin: "org.hibernate.orm"

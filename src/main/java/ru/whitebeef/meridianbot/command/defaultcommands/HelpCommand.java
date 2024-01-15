@@ -1,10 +1,10 @@
-package ru.whitebeef.pepebot.command.defaultcommands;
+package ru.whitebeef.meridianbot.command.defaultcommands;
 
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import ru.whitebeef.pepebot.PepeBot;
-import ru.whitebeef.pepebot.command.AbstractCommand;
-import ru.whitebeef.pepebot.command.Alias;
+import ru.whitebeef.meridianbot.MeridianBot;
+import ru.whitebeef.meridianbot.command.AbstractCommand;
+import ru.whitebeef.meridianbot.command.Alias;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class HelpCommand extends AbstractCommand {
     @Override
     public void onCommand(String[] args) {
         log.info("Help:");
-        for (AbstractCommand command : PepeBot.getInstance().getCommandRegistry().getRegisteredCommands()) {
+        for (AbstractCommand command : MeridianBot.getInstance().getCommandRegistry().getRegisteredCommands()) {
             log.info(command.getName() + ": " + command.getDescription() + " - " + command.getUsageMessage());
         }
     }

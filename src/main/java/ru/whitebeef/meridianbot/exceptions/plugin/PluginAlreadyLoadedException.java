@@ -1,6 +1,6 @@
-package ru.whitebeef.pepebot.exceptions.plugin;
+package ru.whitebeef.meridianbot.exceptions.plugin;
 
-import ru.whitebeef.pepebot.plugin.PluginInfo;
+import ru.whitebeef.meridianbot.plugin.PluginInfo;
 
 public class PluginAlreadyLoadedException extends Exception {
 

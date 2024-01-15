@@ -1,12 +1,12 @@
-package ru.whitebeef.pepebot.plugin;
+package ru.whitebeef.meridianbot.plugin;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import ru.whitebeef.pepebot.PepeBot;
-import ru.whitebeef.pepebot.utils.GsonUtils;
+import ru.whitebeef.meridianbot.MeridianBot;
+import ru.whitebeef.meridianbot.utils.GsonUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public abstract class BeefPlugin implements Plugin {
 
     public BeefPlugin(@NotNull PluginInfo info, PluginClassLoader pluginClassLoader) {
         this.info = info;
-        this.dataFolder = new File(PepeBot.class.getProtectionDomain().getCodeSource().getLocation().toString()
+        this.dataFolder = new File(MeridianBot.class.getProtectionDomain().getCodeSource().getLocation().toString()
                 + "plugins" + File.separator + info.getName() + File.separator);
         this.pluginClassLoader = pluginClassLoader;
     }

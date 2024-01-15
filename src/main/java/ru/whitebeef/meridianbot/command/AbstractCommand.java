@@ -1,11 +1,10 @@
-package ru.whitebeef.pepebot.command;
+package ru.whitebeef.meridianbot.command;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.whitebeef.pepebot.PepeBot;
-import ru.whitebeef.pepebot.plugin.Plugin;
-import ru.whitebeef.pepebot.utils.Pair;
+import ru.whitebeef.meridianbot.MeridianBot;
+import ru.whitebeef.meridianbot.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,26 +13,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.WeakHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class AbstractCommand {
-    private static final Map<Plugin, List<AbstractCommand>> registeredCommands = new WeakHashMap<>();
-
-    public static void unregisterAllCommands(Plugin plugin) {
-        registeredCommands.getOrDefault(plugin, new ArrayList<>()).forEach(AbstractCommand::unregister);
-    }
 
     public static Builder builder(String name, Class<? extends AbstractCommand> clazz) {
         return new Builder(name, clazz);
-    }
-
-
-    public static Optional<AbstractCommand> getCommand(Plugin plugin, String command) {
-        String finalCommand = command.toLowerCase();
-        return registeredCommands.get(plugin).stream().filter(abstractCommand -> abstractCommand.getName().equals(finalCommand)).findAny();
     }
 
     @Getter
@@ -92,7 +78,7 @@ public class AbstractCommand {
     }
 
 
-    public final boolean execute(@NotNull String commandLabel, @NotNull String[] args) {
+    public final void execute(@NotNull String commandLabel, @NotNull String[] args) {
         Pair<Integer, AbstractCommand> pair = getCurrentCommand(args);
         AbstractCommand currentCommand = pair.right();
 
@@ -100,18 +86,17 @@ public class AbstractCommand {
 
         if (args.length < currentCommand.getMinArgsCount()) {
             StandardConsumers.NO_ARGS.getConsumer().accept(args);
-            return true;
+            return;
         }
 
         if (currentCommand.getOnCommand() != null) {
             currentCommand.getOnCommand().accept(args);
-            return true;
+            return;
         }
         currentCommand.onCommand(args);
-        return true;
     }
 
-    public final @NotNull List<String> tabComplete(@NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
+    public final @NotNull List<String> tabComplete(@NotNull String[] args) throws IllegalArgumentException {
         if (args.length == 0) {
             return Collections.emptyList();
         }
@@ -127,7 +112,7 @@ public class AbstractCommand {
         } else {
             AbstractCommand subcommand = this.getSubcommand(args[0]);
             if (subcommand != null) {
-                retList.addAll(subcommand.tabComplete(args[0], Arrays.copyOfRange(args, 1, args.length)));
+                retList.addAll(subcommand.tabComplete(Arrays.copyOfRange(args, 1, args.length)));
             } else {
                 if (onTabComplete != null) {
                     retList.addAll(onTabComplete.apply(args));
@@ -163,11 +148,11 @@ public class AbstractCommand {
 
     public void register() {
         loadTree(this, this);
-        PepeBot.getInstance().getCommandRegistry().registerCommand(this);
+        MeridianBot.getInstance().getCommandRegistry().registerCommand(this);
     }
 
     public void unregister() {
-        PepeBot.getInstance().getCommandRegistry().unregisterCommand(this);
+        MeridianBot.getInstance().getCommandRegistry().unregisterCommand(this);
     }
 
     public static class Builder {

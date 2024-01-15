@@ -1,11 +1,10 @@
-package ru.whitebeef.pepebot.plugin;
+package ru.whitebeef.meridianbot.plugin;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.Getter;
-import org.apache.logging.log4j.core.util.IOUtils;
 import org.jetbrains.annotations.NotNull;
-import ru.whitebeef.pepebot.PepeBot;
+import ru.whitebeef.meridianbot.MeridianBot;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +43,7 @@ public class PluginClassLoader extends URLClassLoader {
     protected final Map<String, Class<?>> classes = new HashMap<>();
 
     protected PluginClassLoader(@NotNull PluginRegistry registry, @NotNull Path filePath) throws IOException {
-        super(new URL[0], PepeBot.class.getClassLoader());
+        super(new URL[0], MeridianBot.class.getClassLoader());
         this.registry = registry;
         this.jarFile = new JarFile(filePath.toFile());
         JsonObject jsonObject = (JsonObject) new JsonParser().parse(new InputStreamReader(jarFile.getInputStream(jarFile.getEntry("plugin.json"))));

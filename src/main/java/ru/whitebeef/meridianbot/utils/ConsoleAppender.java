@@ -1,4 +1,4 @@
-package ru.whitebeef.pepebot.utils;
+package ru.whitebeef.meridianbot.utils;
 
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;

@@ -1,10 +1,10 @@
-package ru.whitebeef.pepebot.plugin;
+package ru.whitebeef.meridianbot.plugin;
 
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.whitebeef.pepebot.PepeBot;
-import ru.whitebeef.pepebot.exceptions.plugin.PluginAlreadyLoadedException;
+import ru.whitebeef.meridianbot.MeridianBot;
+import ru.whitebeef.meridianbot.exceptions.plugin.PluginAlreadyLoadedException;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -50,7 +50,7 @@ public class PluginRegistry {
 
     public void registerPlugins(String folder) {
         try {
-            Path pluginsFolderPath = Path.of(PepeBot.getInstance().getMainFolder() + File.separator + folder);
+            Path pluginsFolderPath = Path.of(MeridianBot.getInstance().getMainFolder() + File.separator + folder);
             if (!Files.isDirectory(pluginsFolderPath)) {
                 Files.createDirectories(pluginsFolderPath);
             }

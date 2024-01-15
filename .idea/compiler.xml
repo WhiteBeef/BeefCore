@@ -7,10 +7,19 @@
         <processorPath useClasspath="false">
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.projectlombok/lombok/1.18.30/f195ee86e6c896ea47a1d39defbe20eb59cd149d/lombok-1.18.30.jar" />
         </processorPath>
-        <module name="PepeBot.main" />
-        <module name="PepeBot.test" />
+        <module name="MeridianBot.test" />
+        <module name="MeridianBot.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="17" />
+    <bytecodeTargetLevel target="17">
+      <module name="IdeaProjects.MessageSender" target="21" />
+      <module name="IdeaProjects.MessageSender.main" target="21" />
+      <module name="IdeaProjects.MessageSender.test" target="21" />
+      <module name="MessageSender" target="21" />
+      <module name="MessageSender.main" target="21" />
+      <module name="MessageSender.test" target="21" />
+      <module name="ru.whitebeef.MessageSender.main" target="21" />
+      <module name="ru.whitebeef.MessageSender.test" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

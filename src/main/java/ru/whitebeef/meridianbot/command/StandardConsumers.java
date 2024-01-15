@@ -1,4 +1,4 @@
-package ru.whitebeef.pepebot.command;
+package ru.whitebeef.meridianbot.command;
 
 import lombok.extern.log4j.Log4j2;
 

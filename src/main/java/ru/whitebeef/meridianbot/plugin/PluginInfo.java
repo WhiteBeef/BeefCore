@@ -1,4 +1,4 @@
-package ru.whitebeef.pepebot.plugin;
+package ru.whitebeef.meridianbot.plugin;
 
 import org.jetbrains.annotations.NotNull;
 
