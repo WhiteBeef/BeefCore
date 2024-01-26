@@ -1,16 +1,17 @@
 package ru.whitebeef.meridianbot;
 
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.Alias;
 import ru.whitebeef.meridianbot.command.CommandRegistry;
 import ru.whitebeef.meridianbot.command.SimpleCommand;
 import ru.whitebeef.meridianbot.command.defaultcommands.HelpCommand;
+import ru.whitebeef.meridianbot.console.ConsoleConfigurator;
 import ru.whitebeef.meridianbot.plugin.Plugin;
 import ru.whitebeef.meridianbot.plugin.PluginRegistry;
 
@@ -20,7 +21,7 @@ import java.nio.file.Paths;
 
 @Log4j2
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
-public class MeridianBot {
+public class MeridianBot extends ConsoleConfigurator {
 
     public static void main(String[] args) {
         SpringApplication.run(MeridianBot.class);
@@ -36,16 +37,15 @@ public class MeridianBot {
     @Getter
     private static MeridianBot instance;
 
-    @Bean
-    public void startup() {
+    @PostConstruct
+    public void init() {
         instance = this;
 
         pluginRegistry = new PluginRegistry();
 
         try {
-            log.info(MeridianBot.class.getProtectionDomain().getCodeSource().getLocation());
+            log.info(Paths.get(MeridianBot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toAbsolutePath());
             mainFolder = Paths.get(MeridianBot.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toFile().getParentFile();
-
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -63,6 +63,7 @@ public class MeridianBot {
         AbstractCommand.builder("help", HelpCommand.class)
                 .setDescription("Команда для просмотра доступных команд")
                 .setUsageMessage("help")
+                .addAlias(Alias.of("рудз", false))
                 .build().register();
 
         AbstractCommand.builder("stop", SimpleCommand.class)
@@ -70,6 +71,7 @@ public class MeridianBot {
                 .setUsageMessage("stop")
                 .setOnCommand((args) -> {
                     log.info("Остановка..");
+
                 })
                 .build().register();
 

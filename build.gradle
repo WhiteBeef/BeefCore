@@ -71,6 +71,7 @@ dependencies {
     implementation 'org.springframework.data:spring-data-jpa:3.2.1'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.5'
     implementation 'com.github.gwenn:sqlite-dialect:0.1.2'
+    implementation 'net.java.dev.jna:jna:5.14.0'
 }
 
 def targetJavaVersion = 17
