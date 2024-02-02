@@ -1,9 +1,7 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.0"
     id 'java-library'
     id 'maven-publish'
     id 'application'
-    id "org.hibernate.orm" version "6.4.1.Final"
     id 'org.springframework.boot' version '3.2.1'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -12,7 +10,7 @@ test {
 }
 
 group = 'ru.whitebeef'
-version = '1.1.0'
+version = '1.1.4'
 mainClassName = 'ru.whitebeef.meridianbot.MeridianBot'
 
 compileJava.options.encoding = 'UTF-8'
@@ -56,10 +54,11 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
     implementation 'org.jline:jline:3.23.0'
+
     implementation 'org.apache.logging.log4j:log4j-api:2.22.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.22.0'
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
+    implementation 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
@@ -67,7 +66,8 @@ dependencies {
 
     implementation 'com.google.code.gson:gson:2.7'
     implementation 'net.dv8tion:JDA:5.0.0-beta.12'
-    implementation 'org.hibernate.orm:hibernate-gradle-plugin:6.4.1.Final'
+
+    implementation "org.hibernate.orm:hibernate-core:6.4.2.Final"
     implementation 'org.springframework.data:spring-data-jpa:3.2.1'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.5'
     implementation 'com.github.gwenn:sqlite-dialect:0.1.2'
@@ -105,23 +105,21 @@ processResources {
 }
 
 jar {
-    enabled = false
-    delete destinationDir.toPath().toString() + '\\' + jarName
-    delete destinationDir.toPath().toString() + '\\' + versionJarName
-
-
     destinationDirectory.set(destinationDir)
     archiveFileName.set(jarName)
 
-    doLast {
-        copy {
-            from destinationDir.toPath()
-            into destinationDir.toPath()
-            rename { versionJarName }
-            duplicatesStrategy(DuplicatesStrategy.INCLUDE)
-        }
-    }
 }
+
+task fatJar(type: Jar) {
+
+    archiveBaseName = "${rootProject.name}"
+    tasks.withType(Jar){
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 publishing {
     publications {
         myib(MavenPublication) {
@@ -138,9 +136,8 @@ publishing {
             }
         }
     }
+
 }
 
 
-
 apply plugin: 'java-library'
-apply plugin: "org.hibernate.orm"

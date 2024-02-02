@@ -3,29 +3,45 @@ package ru.whitebeef.meridianbot.entities;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.whitebeef.meridianbot.dto.UserDTO;
+import ru.whitebeef.meridianbot.utils.Pair;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
-public class UserImpl implements User {
-    @Getter
-    private Long id;
+public class Role implements Permissible {
+
+    private static final Map<String, Role> registeredRoles = new HashMap<>();
+
+    public static Role of(String name, Pair<Permission, Permission.State>... permissions) {
+        if (registeredRoles.containsKey(name)) {
+            if (permissions.length > 0) {
+                throw new IllegalArgumentException("Group with name " + name + " is already registered!");
+            }
+            return registeredRoles.get(name);
+        }
+        return new Role(name, permissions);
+    }
+
     @Getter
     private final Map<Permission, Permission.State> permissions = new HashMap<>();
+
     @Getter
-    private final Set<Role> roles = new HashSet<>();
+    private final String name;
 
-    public UserImpl(UserDTO userDTO) {
+    private Role(String name, Pair<Permission, Permission.State>... permissions) {
+        this.name = name;
+        registeredRoles.put(name, this);
 
+        for (var permission : permissions) {
+            setPermission(permission.left(), permission.right());
+        }
     }
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
         return hasPermission(Permission.of(permission));
     }
+
 
     @Override
     public void setPermission(@NotNull String permission, Permission.State state) {
@@ -48,13 +64,4 @@ public class UserImpl implements User {
         }
     }
 
-    @Override
-    public void addRole(Role role) {
-        this.roles.add(role);
-    }
-
-    @Override
-    public void removeRole(Role role) {
-        this.roles.remove(role);
-    }
 }
