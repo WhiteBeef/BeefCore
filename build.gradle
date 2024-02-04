@@ -10,7 +10,7 @@ test {
 }
 
 group = 'ru.whitebeef'
-version = '1.1.4'
+version = '1.2.0'
 mainClassName = 'ru.whitebeef.meridianbot.MeridianBot'
 
 compileJava.options.encoding = 'UTF-8'
@@ -32,6 +32,10 @@ repositories {
     maven {
         name = 'sonatype'
         url = 'https://oss.sonatype.org/content/groups/public/'
+    }
+    maven {
+        name = 'mvnrepository'
+        url = 'https://mvnrepository.com/artifact/'
     }
     maven {
         name = 'codemc-repo'
@@ -65,12 +69,13 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
 
     implementation 'com.google.code.gson:gson:2.7'
-    implementation 'net.dv8tion:JDA:5.0.0-beta.12'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.20'
 
     implementation "org.hibernate.orm:hibernate-core:6.4.2.Final"
     implementation 'org.springframework.data:spring-data-jpa:3.2.1'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.5'
     implementation 'com.github.gwenn:sqlite-dialect:0.1.2'
+
     implementation 'net.java.dev.jna:jna:5.14.0'
 }
 
@@ -110,15 +115,7 @@ jar {
 
 }
 
-task fatJar(type: Jar) {
 
-    archiveBaseName = "${rootProject.name}"
-    tasks.withType(Jar){
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-    }
-    from { configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
 
 publishing {
     publications {

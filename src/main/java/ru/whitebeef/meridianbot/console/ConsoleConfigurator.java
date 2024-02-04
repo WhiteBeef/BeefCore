@@ -6,17 +6,26 @@ import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.CustomTabCompleter;
+import ru.whitebeef.meridianbot.registry.CommandRegistry;
 
 import java.util.Arrays;
 
 @Log4j2
 @Component
 public class ConsoleConfigurator implements CommandLineRunner {
+
+    private final CommandRegistry commandRegistry;
+
+    @Autowired
+    public ConsoleConfigurator(CommandRegistry commandRegistry) {
+        this.commandRegistry = commandRegistry;
+    }
+
     @Override
     public void run(String... args) {
         try (Terminal terminal = TerminalBuilder
@@ -30,7 +39,7 @@ public class ConsoleConfigurator implements CommandLineRunner {
                     .build();
 
             String userInput = "";
-
+            Thread.sleep(1000);
             do {
                 try {
                     userInput = lineReader.readLine("> ");
@@ -41,7 +50,7 @@ public class ConsoleConfigurator implements CommandLineRunner {
                     if (commandArray.length == 0) {
                         continue;
                     }
-                    AbstractCommand command = MeridianBot.getInstance().getCommandRegistry().getCommand(commandArray[0]);
+                    AbstractCommand command = commandRegistry.getCommand(commandArray[0]);
                     if (command == null) {
                         log.warn("Команда '" + userInput + "' не найдена!");
                         continue;
@@ -54,6 +63,7 @@ public class ConsoleConfigurator implements CommandLineRunner {
                     e.printStackTrace();
                 }
             } while (!userInput.startsWith("stop"));
+
         } catch (
                 Exception e) {
             log.error("Ошибка ввода!");

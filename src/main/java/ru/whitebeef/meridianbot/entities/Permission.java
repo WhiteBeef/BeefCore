@@ -56,20 +56,11 @@ public class Permission {
         return child;
     }
 
-    /*@Override
-    public String toString() {
-        return permission;
-    }*/
-
     @Override
     public String toString() {
-        return "Permission{" +
-                "permission='" + permission + '\'' +
-                ", parent=" + (parent == null ? null : parent.permission) +
-                ", superPermission=" + superPermission +
-                ", rootPermission=" + rootPermission +
-                '}';
+        return permission;
     }
+
 
     @Override
     public boolean equals(Object o) {

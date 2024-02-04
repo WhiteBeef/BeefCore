@@ -3,6 +3,9 @@ package ru.whitebeef.meridianbot.plugin;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.exceptions.plugin.PluginAlreadyLoadedException;
 
@@ -16,10 +19,19 @@ import java.util.Map;
 import java.util.Set;
 
 @Log4j2
+@Component
+@DependsOn("meridianBot")
 public class PluginRegistry {
 
     protected final Map<String, Plugin> plugins = new HashMap<>();
     protected final Map<String, Class<?>> classes = new HashMap<>();
+
+    private MeridianBot meridianBot;
+
+    @Autowired
+    public PluginRegistry(MeridianBot meridianBot) {
+        this.meridianBot = meridianBot;
+    }
 
     public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException {
         PluginInfo info = pluginClassLoader.getInfo();
@@ -50,7 +62,7 @@ public class PluginRegistry {
 
     public void registerPlugins(String folder) {
         try {
-            Path pluginsFolderPath = Path.of(MeridianBot.getInstance().getMainFolder() + File.separator + folder);
+            Path pluginsFolderPath = Path.of(meridianBot.getMainFolder() + File.separator + folder);
             if (!Files.isDirectory(pluginsFolderPath)) {
                 Files.createDirectories(pluginsFolderPath);
             }

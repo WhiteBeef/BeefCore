@@ -41,5 +41,10 @@
       <option name="name" value="whitebeef-repository" />
       <option name="url" value="https://mvn.whitebeef.ru/private" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="mvnrepository" />
+      <option name="name" value="mvnrepository" />
+      <option name="url" value="https://mvnrepository.com/artifact/" />
+    </remote-repository>
   </component>
 </project>

@@ -2,7 +2,6 @@ package ru.whitebeef.meridianbot.command.defaultcommands;
 
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
-import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.Alias;
 
@@ -13,6 +12,7 @@ import java.util.function.Function;
 
 @Log4j2
 public class HelpCommand extends AbstractCommand {
+
     public HelpCommand(@NotNull String name, @NotNull String description, @NotNull String usageMessage, Consumer<String[]> onCommand, Function<String[], List<String>> onTabComplete, Map<String, AbstractCommand> subCommands, List<Alias> aliases, int minArgsCount) {
         super(name, description, usageMessage, onCommand, onTabComplete, subCommands, aliases, minArgsCount);
     }
@@ -20,7 +20,7 @@ public class HelpCommand extends AbstractCommand {
     @Override
     public void onCommand(String[] args) {
         log.info("Help:");
-        for (AbstractCommand command : MeridianBot.getInstance().getCommandRegistry().getRegisteredCommands()) {
+        for (AbstractCommand command : getCommandRegistry().getRegisteredCommands()) {
             log.info(command.getName() + ": " + command.getDescription() + " - " + command.getUsageMessage());
         }
     }

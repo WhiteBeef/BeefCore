@@ -3,7 +3,7 @@ package ru.whitebeef.meridianbot.command;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import ru.whitebeef.meridianbot.MeridianBot;
+import ru.whitebeef.meridianbot.registry.CommandRegistry;
 import ru.whitebeef.meridianbot.utils.Pair;
 
 import java.util.ArrayList;
@@ -37,6 +37,9 @@ public class AbstractCommand {
     private final List<Alias> aliases;
     @Getter
     private final int minArgsCount;
+
+    @Getter
+    private CommandRegistry commandRegistry;
 
     public AbstractCommand(@NotNull String name, @NotNull String description, @NotNull String usageMessage, Consumer<String[]> onCommand,
                            Function<String[], List<String>> onTabComplete,
@@ -146,13 +149,14 @@ public class AbstractCommand {
     }
 
 
-    public void register() {
+    public void register(CommandRegistry commandRegistry) {
         loadTree(this, this);
-        MeridianBot.getInstance().getCommandRegistry().registerCommand(this);
+        commandRegistry.registerCommand(this);
+        this.commandRegistry = commandRegistry;
     }
 
-    public void unregister() {
-        MeridianBot.getInstance().getCommandRegistry().unregisterCommand(this);
+    public void unregister(CommandRegistry commandRegistry) {
+        commandRegistry.unregisterCommand(this);
     }
 
     public static class Builder {
