@@ -10,7 +10,7 @@ test {
 }
 
 group = 'ru.whitebeef'
-version = '1.2.0'
+version = '1.2.1'
 mainClassName = 'ru.whitebeef.meridianbot.MeridianBot'
 
 compileJava.options.encoding = 'UTF-8'
@@ -73,7 +73,7 @@ dependencies {
 
     implementation "org.hibernate.orm:hibernate-core:6.4.2.Final"
     implementation 'org.springframework.data:spring-data-jpa:3.2.1'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc:2.7.5'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc:3.0.4'
     implementation 'com.github.gwenn:sqlite-dialect:0.1.2'
 
     implementation 'net.java.dev.jna:jna:5.14.0'

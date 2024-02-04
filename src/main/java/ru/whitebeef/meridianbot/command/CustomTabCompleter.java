@@ -7,18 +7,23 @@ import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 import org.jline.utils.AttributedString;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.registry.CommandRegistry;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Log4j2
-@DependsOn("commandRegistry")
+@Component
 public class CustomTabCompleter implements Completer {
 
+
+    private final CommandRegistry commandRegistry;
+
     @Autowired
-    private CommandRegistry commandRegistry;
+    public CustomTabCompleter(CommandRegistry commandRegistry) {
+        this.commandRegistry = commandRegistry;
+    }
 
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> candidates) {

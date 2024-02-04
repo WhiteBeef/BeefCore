@@ -8,6 +8,7 @@ import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.CustomTabCompleter;
@@ -17,13 +18,16 @@ import java.util.Arrays;
 
 @Log4j2
 @Component
+@DependsOn("commandRegistry")
 public class ConsoleConfigurator implements CommandLineRunner {
 
     private final CommandRegistry commandRegistry;
+    private final CustomTabCompleter customTabCompleter;
 
     @Autowired
-    public ConsoleConfigurator(CommandRegistry commandRegistry) {
+    public ConsoleConfigurator(CommandRegistry commandRegistry, CustomTabCompleter customTabCompleter) {
         this.commandRegistry = commandRegistry;
+        this.customTabCompleter = customTabCompleter;
     }
 
     @Override
@@ -35,7 +39,7 @@ public class ConsoleConfigurator implements CommandLineRunner {
             LineReader lineReader = LineReaderBuilder
                     .builder()
                     .terminal(terminal)
-                    .completer(new CustomTabCompleter())
+                    .completer(customTabCompleter)
                     .build();
 
             String userInput = "";

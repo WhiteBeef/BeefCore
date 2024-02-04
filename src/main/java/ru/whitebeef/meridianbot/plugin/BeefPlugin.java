@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.util.ResourceUtils;
 import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.utils.GsonUtils;
 
@@ -58,6 +59,7 @@ public abstract class BeefPlugin implements Plugin {
     }
 
     public boolean saveDefaultConfig(boolean forceReplace) {
+        //TODO: Add forceReplace check
         try {
             return this.pluginClassLoader.saveResource(Path.of(dataFolder + "config.json"), true);
         } catch (IOException e) {
@@ -68,7 +70,7 @@ public abstract class BeefPlugin implements Plugin {
     @Override
     public @NotNull JsonElement getConfig() {
         try {
-            return GsonUtils.getJsonObject(new File(dataFolder.getPath() + File.separator + "config.json"));
+            return GsonUtils.getJsonObject(ResourceUtils.getFile("file:" + dataFolder.getPath() + "/config.json"));
         } catch (Exception ignored) {
         }
         return new JsonObject();

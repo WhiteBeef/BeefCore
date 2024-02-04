@@ -45,7 +45,8 @@ public class MeridianBot {
             this.mainFolder = loadMainFolder();
             this.config = loadConfig(mainFolder);
         } catch (IOException exception) {
-            throw new RuntimeException(exception);
+            log.error(exception);
+            throw new RuntimeException();
         }
     }
 
@@ -66,7 +67,6 @@ public class MeridianBot {
         return jda.getGuildById(config.get("guild_id").getAsString());
     }
 
-    @Bean
     public File loadMainFolder() throws FileNotFoundException {
         return ResourceUtils.getFile("file:./");
     }

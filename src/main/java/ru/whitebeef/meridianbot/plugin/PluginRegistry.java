@@ -1,5 +1,6 @@
 package ru.whitebeef.meridianbot.plugin;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,11 +27,17 @@ public class PluginRegistry {
     protected final Map<String, Plugin> plugins = new HashMap<>();
     protected final Map<String, Class<?>> classes = new HashMap<>();
 
-    private MeridianBot meridianBot;
+    private final MeridianBot meridianBot;
 
     @Autowired
     public PluginRegistry(MeridianBot meridianBot) {
         this.meridianBot = meridianBot;
+    }
+
+    @PostConstruct
+    private void loadDefaultFolder() {
+        registerPlugins("plugins");
+        enablePlugins();
     }
 
     public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException {

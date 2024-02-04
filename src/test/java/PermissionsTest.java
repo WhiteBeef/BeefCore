@@ -24,7 +24,6 @@ public class PermissionsTest {
         Assertions.assertFalse(user.hasPermission("testpermission"));
         Assertions.assertFalse(user.hasPermission("testpermission.test.test1"));
 
-
         user.setPermission(Permission.of("*"), true);
 
         Assertions.assertTrue(user.hasPermission("supertestpermission.test.super"));

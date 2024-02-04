@@ -1,6 +1,5 @@
 package ru.whitebeef.meridianbot.registry;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @Log4j2
 @Component
 public class CommandRegistry {
@@ -32,6 +30,11 @@ public class CommandRegistry {
     public CommandRegistry(MeridianBot meridianBot, PluginRegistry pluginRegistry) {
         this.meridianBot = meridianBot;
         this.pluginRegistry = pluginRegistry;
+    }
+
+    @Bean
+    public CommandRegistry loadCommandRegistry(MeridianBot meridianBot, PluginRegistry pluginRegistry) {
+        return new CommandRegistry(meridianBot, pluginRegistry);
     }
 
     private final Map<String, AbstractCommand> commandMap = new HashMap<>();
