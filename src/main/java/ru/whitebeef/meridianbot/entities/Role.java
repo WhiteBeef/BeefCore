@@ -3,6 +3,7 @@ package ru.whitebeef.meridianbot.entities;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.whitebeef.meridianbot.dto.RoleDTO;
 import ru.whitebeef.meridianbot.registry.RoleRegistry;
 import ru.whitebeef.meridianbot.utils.Pair;
 
@@ -27,6 +28,12 @@ public class Role implements Permissible {
             setPermission(permission.left(), permission.right());
         }
         roleRegistry.registerRole(this);
+    }
+
+    public Role(RoleDTO roleDto) {
+        this.id = roleDto.getId();
+        this.name = roleDto.getName();
+        roleDto.getPermissions().forEach((permission, state) -> permissions.put(Permission.of(permission), Permission.State.fromBoolean(state)));
     }
 
     @Override
@@ -56,4 +63,12 @@ public class Role implements Permissible {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Role{" +
+                "permissions=" + permissions +
+                ", id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

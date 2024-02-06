@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import ru.whitebeef.meridianbot.entities.User;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,15 +25,14 @@ public class UserDTO {
 
     @Getter
     @ElementCollection
-    private Map<String, Boolean> permissions;
+    private Map<String, Boolean> permissions = new HashMap<>();
 
     @Getter
     @ElementCollection
-    private Set<String> roles;
+    private Set<String> roles = new HashSet<>();
 
     public UserDTO(User user) {
         this.id = user.getId();
-        this.permissions = new HashMap<>();
         user.getPermissions().forEach((permission, state) -> this.permissions.put(permission.getPermission(), state.toBoolean()));
     }
 }

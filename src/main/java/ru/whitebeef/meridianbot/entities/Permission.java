@@ -103,6 +103,16 @@ public class Permission {
                 case NOT_FOUND -> null;
             };
         }
+
+        public static State fromBoolean(Boolean value) {
+            if (value == null) {
+                return NOT_FOUND;
+            }
+            if (value) {
+                return ALLOWED;
+            }
+            return DENIED;
+        }
     }
 
 }

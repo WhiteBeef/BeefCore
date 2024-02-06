@@ -1,4 +1,12 @@
 {
   "guild_id": "",
-  "token": ""
+  "token": "",
+  "roles": [
+    {
+      "name": "default",
+      "permissions": {
+        "permission1": false
+      }
+    }
+  ]
 }

@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.whitebeef.meridianbot.entities.Permission;
 import ru.whitebeef.meridianbot.entities.Role;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Entity(name = "roles")
@@ -20,6 +22,7 @@ public class RoleDTO {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
+    @Setter
     private Long id;
 
     @Getter
@@ -27,7 +30,7 @@ public class RoleDTO {
 
     @ElementCollection
     @Getter
-    private Map<String, Boolean> permissions;
+    private Map<String, Boolean> permissions = new HashMap<>();
 
 
     public RoleDTO(Role role) {
