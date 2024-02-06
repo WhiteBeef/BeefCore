@@ -5,7 +5,6 @@ import com.google.common.cache.RemovalNotification;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.whitebeef.meridianbot.dto.UserDTO;
 import ru.whitebeef.meridianbot.entities.User;
 import ru.whitebeef.meridianbot.repository.UserRepository;
 
@@ -25,6 +24,6 @@ public class UserRemovalListener implements RemovalListener<Long, User> {
         if (notification.getValue() == null) {
             return;
         }
-        userRepository.save(new UserDTO(notification.getValue()));
+        userRepository.save(notification.getValue());
     }
 }

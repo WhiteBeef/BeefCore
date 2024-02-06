@@ -3,12 +3,13 @@ package ru.whitebeef.meridianbot.repository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import ru.whitebeef.meridianbot.dto.UserDTO;
+import ru.whitebeef.meridianbot.entities.User;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserDTO, Long> {
-    Optional<UserDTO> getUserById(@NotNull Long id);
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> getUserById(@NotNull Long id);
 
+    Optional<User> getUserByDiscordId(@NotNull Long id);
 }

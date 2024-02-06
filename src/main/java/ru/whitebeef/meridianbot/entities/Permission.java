@@ -1,5 +1,8 @@
 package ru.whitebeef.meridianbot.entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+@Entity
 public class Permission {
     @RegExp
     private static final String PERMISSION_FORMAT = "(?:(?:\\*)/(?:[a-z0-9_]+(?:\\.[a-z0-9_]+)*(?:\\.\\*)?))";
@@ -21,11 +25,15 @@ public class Permission {
         return registeredPermissions.getOrDefault(permission, new Permission(permission));
     }
 
+
     @Getter
+    @Id
     private final String permission;
 
     @Getter
+    @Transient
     private Permission parent = null;
+    @Transient
     private final List<Permission> child = new ArrayList<>();
     @Getter
     private boolean superPermission = false;
