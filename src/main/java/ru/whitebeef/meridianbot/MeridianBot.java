@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.util.ResourceUtils;
@@ -24,7 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 @Log4j2
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+@SpringBootApplication
 public class MeridianBot {
 
     public static void main(String[] args) {

@@ -3,6 +3,7 @@ package ru.whitebeef.meridianbot.entities;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.whitebeef.meridianbot.registry.RoleRegistry;
 import ru.whitebeef.meridianbot.utils.Pair;
 
 import java.util.HashMap;
@@ -10,31 +11,22 @@ import java.util.Map;
 
 public class Role implements Permissible {
 
-    private static final Map<String, Role> registeredRoles = new HashMap<>();
-
-    public static Role of(String name, Pair<Permission, Permission.State>... permissions) {
-        if (registeredRoles.containsKey(name)) {
-            if (permissions.length > 0) {
-                throw new IllegalArgumentException("Group with name " + name + " is already registered!");
-            }
-            return registeredRoles.get(name);
-        }
-        return new Role(name, permissions);
-    }
 
     @Getter
     private final Map<Permission, Permission.State> permissions = new HashMap<>();
 
     @Getter
+    private Long id;
+    @Getter
     private final String name;
 
-    private Role(String name, Pair<Permission, Permission.State>... permissions) {
+    public Role(RoleRegistry roleRegistry, String name, Pair<Permission, Permission.State>... permissions) {
         this.name = name;
-        registeredRoles.put(name, this);
 
         for (var permission : permissions) {
             setPermission(permission.left(), permission.right());
         }
+        roleRegistry.registerRole(this);
     }
 
     @Override

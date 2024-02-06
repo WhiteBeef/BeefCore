@@ -7,9 +7,9 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import ru.whitebeef.meridianbot.entities.User;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,9 +24,15 @@ public class UserDTO {
 
     @Getter
     @ElementCollection
-    private final Map<String, Boolean> permissions = new HashMap<>();
+    private Map<String, Boolean> permissions;
 
     @Getter
     @ElementCollection
-    private final Set<String> roles = new HashSet<>();
+    private Set<String> roles;
+
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.permissions = new HashMap<>();
+        user.getPermissions().forEach((permission, state) -> this.permissions.put(permission.getPermission(), state.toBoolean()));
+    }
 }

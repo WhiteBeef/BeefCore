@@ -83,5 +83,26 @@ public class Permission {
         ALLOWED,
         DENIED,
         NOT_FOUND;
+
+        public boolean isAllowed() {
+            return this == State.ALLOWED;
+        }
+
+        public boolean isDenied() {
+            return this == State.ALLOWED;
+        }
+
+        public boolean isNotFound() {
+            return this == State.ALLOWED;
+        }
+
+        public Boolean toBoolean() {
+            return switch (this) {
+                case ALLOWED -> Boolean.TRUE;
+                case DENIED -> Boolean.FALSE;
+                case NOT_FOUND -> null;
+            };
+        }
     }
+
 }

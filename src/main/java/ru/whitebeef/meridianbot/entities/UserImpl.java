@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.whitebeef.meridianbot.dto.UserDTO;
+import ru.whitebeef.meridianbot.registry.RoleRegistry;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +20,10 @@ public class UserImpl implements User {
     private final Set<Role> roles = new HashSet<>();
 
     public UserImpl(UserDTO userDTO) {
+
+        this.id = userDTO.getId();
+        userDTO.getPermissions().forEach((permission, state) -> permissions.put(Permission.of(permission), state ? Permission.State.ALLOWED : Permission.State.DENIED));
+        userDTO.getRoles().forEach(role -> roles.add(RoleRegistry.of(role)));
 
     }
 
