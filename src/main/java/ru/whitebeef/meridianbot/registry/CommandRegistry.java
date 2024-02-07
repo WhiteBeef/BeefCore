@@ -7,8 +7,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
-import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.Alias;
 import ru.whitebeef.meridianbot.command.SimpleCommand;
@@ -24,21 +25,21 @@ import java.util.Map;
 @Component
 public class CommandRegistry {
 
-    private final MeridianBot meridianBot;
     private final PluginRegistry pluginRegistry;
 
     private final JDA jda;
     private final UserRegistry userRegistry;
 
     private final RoleRegistry roleRegistry;
+    private final ApplicationContext context;
 
     @Autowired
-    public CommandRegistry(MeridianBot meridianBot, PluginRegistry pluginRegistry, JDA jda, UserRegistry userRegistry, RoleRegistry roleRegistry) {
-        this.meridianBot = meridianBot;
+    public CommandRegistry(PluginRegistry pluginRegistry, JDA jda, UserRegistry userRegistry, RoleRegistry roleRegistry, ApplicationContext context) {
         this.pluginRegistry = pluginRegistry;
         this.jda = jda;
         this.userRegistry = userRegistry;
         this.roleRegistry = roleRegistry;
+        this.context = context;
     }
 
 
@@ -84,7 +85,7 @@ public class CommandRegistry {
                 .setDescription("Остановить сервер")
                 .setUsageMessage("stop")
                 .setOnCommand((args) -> {
-                    SpringApplication.exit(meridianBot.getContext());
+                    SpringApplication.exit(context);
                 })
                 .build().register(this);
 

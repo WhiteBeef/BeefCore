@@ -5,12 +5,13 @@ import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.exceptions.plugin.PluginAlreadyLoadedException;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -18,20 +19,23 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 @Component
-@DependsOn("meridianBot")
 public class PluginRegistry {
 
     protected final Map<String, Plugin> plugins = new HashMap<>();
     protected final Map<String, Class<?>> classes = new HashMap<>();
 
     private final MeridianBot meridianBot;
+    private final AnnotationConfigApplicationContext applicationContext;
+
 
     @Autowired
-    public PluginRegistry(MeridianBot meridianBot) {
+    public PluginRegistry(MeridianBot meridianBot, AnnotationConfigApplicationContext applicationContext) {
         this.meridianBot = meridianBot;
+        this.applicationContext = applicationContext;
     }
 
     @PostConstruct
@@ -40,7 +44,7 @@ public class PluginRegistry {
         enablePlugins();
     }
 
-    public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException {
+    public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException, NoSuchFieldException, IllegalAccessException {
         PluginInfo info = pluginClassLoader.getInfo();
         String lowerPluginName = info.getName().toLowerCase();
         if (plugins.containsKey(lowerPluginName)) {
@@ -52,7 +56,12 @@ public class PluginRegistry {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.setClassLoader(pluginClassLoader);
+        applicationContext.setParent(this.applicationContext);
+        applicationContext.scan(plugin.getInfo().getMainClassPath().substring(0, plugin.getInfo().getMainClassPath().lastIndexOf('.')));
 
+        applicationContext.refresh();
         plugins.put(lowerPluginName, plugin);
         plugin.onLoad();
     }

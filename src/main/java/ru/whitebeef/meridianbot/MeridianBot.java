@@ -10,11 +10,10 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.util.ResourceUtils;
 import ru.whitebeef.meridianbot.utils.GsonUtils;
 
@@ -33,15 +32,12 @@ public class MeridianBot {
     }
 
     @Getter
-    private final ApplicationContext context;
-    @Getter
     private final File mainFolder;
     @Getter
     private final JsonObject config;
 
-    @Autowired
-    public MeridianBot(ApplicationContext context) {
-        this.context = context;
+
+    public MeridianBot() {
         try {
             this.mainFolder = loadMainFolder();
             this.config = loadConfig(mainFolder);
