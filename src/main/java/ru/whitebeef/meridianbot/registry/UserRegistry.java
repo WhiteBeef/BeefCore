@@ -11,7 +11,8 @@ import ru.whitebeef.meridianbot.cache.loader.UserLoader;
 import ru.whitebeef.meridianbot.entities.User;
 import ru.whitebeef.meridianbot.repository.UserRepository;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -20,6 +21,8 @@ public class UserRegistry {
 
     private final LoadingCache<Long, User> users;
     private final UserRepository userRepository;
+    private final UserLoader userLoader;
+
 
     @Autowired
     public UserRegistry(UserRepository userRepository, UserLoader userLoader, RemovalListener<Long, User> userRemovalListener) {
@@ -28,22 +31,27 @@ public class UserRegistry {
                 .removalListener(userRemovalListener)
                 .build(userLoader);
         this.userRepository = userRepository;
+        this.userLoader = userLoader;
     }
 
-    public User getDefaultUser(Long discordId) {
-        User user = new User();
-        user.setDiscordId(discordId);
-        user.setRoles(Set.of(RoleRegistry.of("default")));
-        return userRepository.save(user);
-    }
 
     public User getUserByDiscordUser(@NotNull net.dv8tion.jda.api.entities.User discordUser) {
-        User user = users.getIfPresent(discordUser.getIdLong());
+        User user = null;
+        try {
+            user = users.get(discordUser.getIdLong());
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
         if (user != null) {
             return user;
         }
-        users.put(discordUser.getIdLong(), getDefaultUser(discordUser.getIdLong()));
+
+        users.put(discordUser.getIdLong(), userLoader.getDefaultUser(discordUser.getIdLong()));
         return users.getUnchecked(discordUser.getIdLong());
+    }
+
+    public Collection<User> getLoadedUsers() {
+        return users.asMap().values();
     }
 
 }

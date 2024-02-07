@@ -1,10 +1,12 @@
 package ru.whitebeef.meridianbot.command;
 
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.whitebeef.meridianbot.registry.CommandRegistry;
 import ru.whitebeef.meridianbot.utils.Pair;
+import ru.whitebeef.meridianbot.utils.StringsUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +18,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+@Log4j2
 public class AbstractCommand {
 
     public static Builder builder(String name, Class<? extends AbstractCommand> clazz) {
@@ -77,6 +80,9 @@ public class AbstractCommand {
     }
 
     protected List<String> onTabComplete(String[] args) {
+        if (args.length > 0) {
+            return subCommands.keySet().stream().filter(subCommand -> StringsUtils.startsWithIgnoreCase(subCommand, args[0])).toList();
+        }
         return Collections.emptyList();
     }
 
@@ -100,10 +106,6 @@ public class AbstractCommand {
     }
 
     public final @NotNull List<String> tabComplete(@NotNull String[] args) throws IllegalArgumentException {
-        if (args.length == 0) {
-            return Collections.emptyList();
-        }
-
         ArrayList<String> retList = new ArrayList<>();
 
         if (args.length == 1) {

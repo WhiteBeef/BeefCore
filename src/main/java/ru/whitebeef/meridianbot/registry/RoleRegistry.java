@@ -13,6 +13,7 @@ import ru.whitebeef.meridianbot.entities.Role;
 import ru.whitebeef.meridianbot.repository.RoleRepository;
 import ru.whitebeef.meridianbot.utils.Pair;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +54,10 @@ public class RoleRegistry {
 
     public void registerRole(Role role) {
         registeredRoles.put(role.getName(), role);
+    }
+
+    public Collection<Role> getLoadedRoles() {
+        return registeredRoles.values();
     }
 
     @PreDestroy

@@ -4,8 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -25,12 +23,8 @@ import java.util.Set;
 @Entity
 @Table(name = "Users")
 public class User implements Roled, Permissible {
+
     @Id
-    @Getter
-    @Setter
-    @Column(unique = true, nullable = false)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
     @Getter
     @Setter
     @Column(unique = true, nullable = false)
@@ -90,14 +84,4 @@ public class User implements Roled, Permissible {
         this.roles.remove(role);
     }
 
-    @Override
-    public String toString() {
-        return "UserImpl{" +
-                "id=" + id +
-                ", discordId=" + discordId +
-                ", permissions=" + permissions +
-                ", permissionsSimple=" + permissionsSimple +
-                ", roles=" + roles +
-                '}';
-    }
 }

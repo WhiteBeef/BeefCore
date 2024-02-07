@@ -8,13 +8,13 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.util.ResourceUtils;
 import ru.whitebeef.meridianbot.utils.GsonUtils;
 
@@ -54,14 +54,11 @@ public class MeridianBot {
 
     @Bean
     public JDA startJDA() {
-        JDABuilder builder = JDABuilder.createDefault(config.get("token").getAsString());
-
-        builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
-        builder.setBulkDeleteSplittingEnabled(false);
-        builder.setActivity(Activity.watching("на БиБиф'а"));
-
-        builder.enableIntents(GatewayIntent.MESSAGE_CONTENT);
-
+        JDABuilder builder = JDABuilder.createDefault(config.get("token").getAsString())
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
+                .enableCache(CacheFlag.ACTIVITY)
+                .setActivity(Activity.watching("на БиБиф'а"));
         return builder.build();
     }
 

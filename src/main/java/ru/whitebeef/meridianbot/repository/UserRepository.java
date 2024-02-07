@@ -9,7 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> getUserById(@NotNull Long id);
-
     Optional<User> getUserByDiscordId(@NotNull Long id);
 }
