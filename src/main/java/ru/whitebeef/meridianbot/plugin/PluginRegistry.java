@@ -11,7 +11,6 @@ import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.exceptions.plugin.PluginAlreadyLoadedException;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 @Log4j2
 @Component
@@ -44,26 +42,31 @@ public class PluginRegistry {
         enablePlugins();
     }
 
-    public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException, NoSuchFieldException, IllegalAccessException {
+    public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException, ClassNotFoundException {
         PluginInfo info = pluginClassLoader.getInfo();
         String lowerPluginName = info.getName().toLowerCase();
         if (plugins.containsKey(lowerPluginName)) {
             throw new PluginAlreadyLoadedException(info);
         }
-        Plugin plugin;
-        try {
-            plugin = (Plugin) pluginClassLoader.findClass(info.getMainClassPath()).getConstructor(PluginInfo.class, PluginClassLoader.class).newInstance(info, pluginClassLoader);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.setClassLoader(pluginClassLoader);
         applicationContext.setParent(this.applicationContext);
-        applicationContext.scan(plugin.getInfo().getMainClassPath().substring(0, plugin.getInfo().getMainClassPath().lastIndexOf('.')));
+        applicationContext.scan(info.getMainClassPath().substring(0, info.getMainClassPath().lastIndexOf('.')));
+        StringBuilder beanName = new StringBuilder(info.getName());
+        beanName.setCharAt(0, Character.toLowerCase(beanName.charAt(0)));
+        applicationContext.registerBean(pluginClassLoader.findClass(info.getMainClassPath()), info, pluginClassLoader);
+
 
         applicationContext.refresh();
+        Plugin plugin = (Plugin) applicationContext.getBean(beanName.toString());
+
         plugins.put(lowerPluginName, plugin);
         plugin.onLoad();
+
+        if (plugin instanceof BeefPlugin beefPlugin) {
+             beefPlugin.saveDefaultConfig();
+        }
     }
 
     @Nullable

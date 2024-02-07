@@ -5,13 +5,16 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
-import ru.whitebeef.meridianbot.MeridianBot;
 import ru.whitebeef.meridianbot.utils.GsonUtils;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public abstract class BeefPlugin implements Plugin {
@@ -32,10 +35,13 @@ public abstract class BeefPlugin implements Plugin {
 
     public BeefPlugin(@NotNull PluginInfo info, PluginClassLoader pluginClassLoader) {
         this.info = info;
-        this.dataFolder = new File(MeridianBot.class.getProtectionDomain().getCodeSource().getLocation().toString()
-                + "plugins" + File.separator + info.getName() + File.separator);
+        this.dataFolder = new File(pluginClassLoader.getDataFolderPath().toAbsolutePath() + "/");
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs();
+        }
         this.pluginClassLoader = pluginClassLoader;
     }
+
 
     @Override
     public void onLoad() {
@@ -59,18 +65,29 @@ public abstract class BeefPlugin implements Plugin {
     }
 
     public boolean saveDefaultConfig(boolean forceReplace) {
-        //TODO: Add forceReplace check
         try {
-            return this.pluginClassLoader.saveResource(Path.of(dataFolder + "config.json"), true);
+            if (!forceReplace && new File(this.dataFolder.getAbsolutePath() + "/config.json").exists()) {
+                return true;
+            }
+            JarEntry configJarEntry = getJarFile().getJarEntry("config.json");
+            if (configJarEntry == null) {
+                return false;
+            }
+            FileCopyUtils.copy(getJarFile().getInputStream(configJarEntry), new FileOutputStream(this.dataFolder.getAbsolutePath() + "/config.json"));
+            return true;
         } catch (IOException e) {
             return false;
         }
     }
 
+    public boolean saveDefaultConfig() {
+        return saveDefaultConfig(false);
+    }
+
     @Override
     public @NotNull JsonElement getConfig() {
         try {
-            return GsonUtils.getJsonObject(ResourceUtils.getFile("file:" + dataFolder.getPath() + "/config.json"));
+            return GsonUtils.getJsonObject(ResourceUtils.getFile("file:" + dataFolder.getAbsolutePath() + "/config.json"));
         } catch (Exception ignored) {
         }
         return new JsonObject();
@@ -84,7 +101,13 @@ public abstract class BeefPlugin implements Plugin {
         return this.pluginClassLoader.saveResource(from, to, replace);
     }
 
-    public boolean getResources(@NotNull Path path, boolean deep) throws IOException {
+    public boolean saveResources(@NotNull Path path, boolean deep) throws IOException {
         return this.pluginClassLoader.saveResource(path, deep);
     }
+
+    public List<Path> getResources(@NotNull Path path, boolean deep) {
+        return this.pluginClassLoader.getResources(path, deep);
+    }
+
+
 }

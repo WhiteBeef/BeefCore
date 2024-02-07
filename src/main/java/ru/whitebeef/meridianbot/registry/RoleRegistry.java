@@ -16,7 +16,6 @@ import ru.whitebeef.meridianbot.utils.Pair;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 @Component
 public class RoleRegistry {
     private static RoleRegistry instance;
