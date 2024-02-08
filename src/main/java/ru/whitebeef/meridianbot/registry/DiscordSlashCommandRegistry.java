@@ -4,10 +4,10 @@ import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
-import net.dv8tion.jda.internal.interactions.CommandDataImpl;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,8 +46,6 @@ public class DiscordSlashCommandRegistry extends ListenerAdapter {
     public void onSlashCommandInteraction(@NotNull SlashCommandInteractionEvent event) {
         super.onSlashCommandInteraction(event);
 
-        log.info("Команда пришла: " + event.getName());
-
         AbstractDiscordSlashCommand command = commands.get(event.getName());
 
         if (command == null) {
@@ -64,9 +62,27 @@ public class DiscordSlashCommandRegistry extends ListenerAdapter {
         command.onSlashCommandInteraction(event);
     }
 
+    @Override
+    public void onCommandAutoCompleteInteraction(@NotNull CommandAutoCompleteInteractionEvent event) {
+        super.onCommandAutoCompleteInteraction(event);
+
+        AbstractDiscordSlashCommand command = commands.get(event.getName());
+
+        if (command == null) {
+            return;
+        }
+
+        User user = userRegistry.getUserByDiscordUser(event.getUser());
+
+        if (!user.hasPermission(command.getPermission())) {
+            return;
+        }
+
+        command.onCommandAutoCompleteInteraction(event);
+    }
+
+
     @PostConstruct
     public void registerCommands() {
-
-        AbstractDiscordSlashCommand.builder(new CommandDataImpl("test", "test command"), AbstractDiscordSlashCommand.class).build().register(this);
     }
 }
