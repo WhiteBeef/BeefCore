@@ -122,11 +122,15 @@ public class CommandRegistry {
                                 })
                                 .build())
                         .build())
+                .setDescription("Просмотр кэша")
+                .setUsageMessage("cache get <users|roles>")
                 .build().register(this);
 
         AbstractCommand.builder("permission", SimpleCommand.class)
                 .addSubCommand(AbstractCommand.builder("get", PermissionGetUserCommand.class).build())
                 .addSubCommand(AbstractCommand.builder("set", PermissionSetUserCommand.class).build())
+                .setDescription("Управление правами")
+                .setUsageMessage("permission <get|set>")
                 .build().register(this);
     }
 

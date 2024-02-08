@@ -3,6 +3,7 @@ package ru.whitebeef.meridianbot.registry;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
+import jakarta.annotation.PreDestroy;
 import lombok.extern.log4j.Log4j2;
 import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
@@ -58,6 +59,12 @@ public class UserRegistry {
 
     public Collection<User> getLoadedUsers() {
         return users.asMap().values();
+    }
+
+    @PreDestroy
+    public void saveAll() {
+        userRepository.saveAll(users.asMap().values());
+        log.info("Saved users: " + users.asMap().values());
     }
 
 }

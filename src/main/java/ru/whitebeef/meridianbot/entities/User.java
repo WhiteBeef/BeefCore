@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class User implements Roled, Permissible {
     private final Map<Permission, Permission.State> permissions = new HashMap<>();
 
     @Getter
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "permissions")
     private Map<String, Boolean> permissionsSimple = new HashMap<>();
 
@@ -55,7 +56,14 @@ public class User implements Roled, Permissible {
 
     @Override
     public void setPermission(@NotNull Permission permission, Permission.State state) {
+        if (state == Permission.State.NOT_SET) {
+            permissions.remove(permission);
+            permissionsSimple.remove(permission.getPermission());
+            return;
+        }
         permissions.put(permission, state);
+        permissionsSimple.put(permission.getPermission(), state.toBoolean());
+
     }
 
     @Override
@@ -84,5 +92,18 @@ public class User implements Roled, Permissible {
         this.roles.remove(role);
     }
 
+    @PostLoad
+    public void postLoad() {
+        permissionsSimple.forEach((permission, value) -> this.permissions.put(Permission.of(permission), Permission.State.fromBoolean(value)));
+    }
 
+    @Override
+    public String toString() {
+        return "User{" +
+                "discordId=" + discordId +
+                ", permissions=" + permissions +
+                ", permissionsSimple=" + permissionsSimple +
+                ", roles=" + roles +
+                '}';
+    }
 }

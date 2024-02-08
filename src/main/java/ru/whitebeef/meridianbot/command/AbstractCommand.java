@@ -115,7 +115,11 @@ public class AbstractCommand {
                 retList.addAll(this.onTabComplete(args));
             }
         } else {
-            AbstractCommand subcommand = this.getSubcommand(args[0]);
+
+            AbstractCommand subcommand = null;
+            if(args.length>0){
+                subcommand = this.getSubcommand(args[0]);
+            }
             if (subcommand != null) {
                 retList.addAll(subcommand.tabComplete(Arrays.copyOfRange(args, 1, args.length)));
             } else {

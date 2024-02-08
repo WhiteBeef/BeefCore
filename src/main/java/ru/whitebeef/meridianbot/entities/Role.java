@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Getter;
@@ -28,7 +29,10 @@ public class Role implements Permissible {
     @Getter
     @Transient
     private final Map<Permission, Permission.State> permissions = new HashMap<>();
-
+    @Getter
+    @ElementCollection
+    @Column(name = "permissions")
+    private Map<String, Boolean> permissionsSimple = new HashMap<>();
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -39,10 +43,6 @@ public class Role implements Permissible {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @Getter
-    @ElementCollection
-    @Column(name = "permissions")
-    private Map<String, Boolean> permissionsSimple = new HashMap<>();
 
     public Role(RoleRegistry roleRegistry, String name, Pair<Permission, Permission.State>... permissions) {
         this.name = name;
@@ -66,7 +66,13 @@ public class Role implements Permissible {
 
     @Override
     public void setPermission(@NotNull Permission permission, Permission.State state) {
+        if (state == Permission.State.NOT_SET) {
+            permissions.remove(permission);
+            permissionsSimple.remove(permission.getPermission());
+            return;
+        }
         permissions.put(permission, state);
+        permissionsSimple.put(permission.getPermission(), state.toBoolean());
     }
 
     public void setPermissionsSimple(Map<String, Boolean> permissionsSimple) {
@@ -83,6 +89,11 @@ public class Role implements Permissible {
         } else {
             setPermission(permission, Permission.State.DENIED);
         }
+    }
+
+    @PostLoad
+    public void onPostLoad() {
+        permissionsSimple.forEach((permission, value) -> this.permissions.put(Permission.of(permission), Permission.State.fromBoolean(value)));
     }
 
     @Override
