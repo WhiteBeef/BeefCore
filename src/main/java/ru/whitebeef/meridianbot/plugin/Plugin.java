@@ -2,6 +2,7 @@ package ru.whitebeef.meridianbot.plugin;
 
 import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.context.ApplicationContext;
 
 import java.io.File;
 import java.util.jar.JarFile;
@@ -13,6 +14,9 @@ public interface Plugin {
 
     @NotNull
     File getDataFolder();
+
+    @NotNull
+    ApplicationContext getPluginApplicationContext();
 
     @NotNull
     JarFile getJarFile();

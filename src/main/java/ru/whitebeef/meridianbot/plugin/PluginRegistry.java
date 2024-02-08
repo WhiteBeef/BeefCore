@@ -24,11 +24,11 @@ import java.util.Set;
 public class PluginRegistry {
 
     protected final Map<String, Plugin> plugins = new HashMap<>();
+    protected final Map<Class<? extends BeefPlugin>, Plugin> classToPlugins = new HashMap<>();
     protected final Map<String, Class<?>> classes = new HashMap<>();
 
     private final MeridianBot meridianBot;
     private final AnnotationConfigApplicationContext applicationContext;
-
 
     @Autowired
     public PluginRegistry(MeridianBot meridianBot, AnnotationConfigApplicationContext applicationContext) {
@@ -42,6 +42,7 @@ public class PluginRegistry {
         enablePlugins();
     }
 
+
     public void loadPlugin(PluginClassLoader pluginClassLoader) {
         try {
             PluginInfo info = pluginClassLoader.getInfo();
@@ -53,16 +54,18 @@ public class PluginRegistry {
             AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
             applicationContext.setClassLoader(pluginClassLoader);
             applicationContext.setParent(this.applicationContext);
-            applicationContext.scan(info.getMainClassPath().substring(0, info.getMainClassPath().lastIndexOf('.')));
+            String basePackage = info.getMainClassPath().substring(0, info.getMainClassPath().lastIndexOf('.'));
+            applicationContext.scan(basePackage);
             StringBuilder beanName = new StringBuilder(info.getName());
             beanName.setCharAt(0, Character.toLowerCase(beanName.charAt(0)));
-            applicationContext.registerBean(pluginClassLoader.findClass(info.getMainClassPath()), info, pluginClassLoader);
-
+            Class<? extends BeefPlugin> pluginMainClass = (Class<? extends BeefPlugin>) pluginClassLoader.findClass(info.getMainClassPath());
+            applicationContext.registerBean(pluginMainClass, info, pluginClassLoader, applicationContext);
 
             applicationContext.refresh();
             Plugin plugin = (Plugin) applicationContext.getBean(beanName.toString());
 
             plugins.put(lowerPluginName, plugin);
+            classToPlugins.put(pluginMainClass, plugin);
             plugin.onLoad();
 
             if (plugin instanceof BeefPlugin beefPlugin) {
@@ -74,6 +77,7 @@ public class PluginRegistry {
         }
     }
 
+
     @Nullable
     public Plugin getPlugin(String name) {
         return plugins.get(name);
@@ -82,6 +86,11 @@ public class PluginRegistry {
     @NotNull
     public Collection<Plugin> getLoadedPlugins() {
         return plugins.values();
+    }
+
+    @Nullable
+    public Plugin getPlugin(Class<? extends BeefPlugin> clazz) {
+        return classToPlugins.get(clazz);
     }
 
     public void registerPlugins(String folder) {

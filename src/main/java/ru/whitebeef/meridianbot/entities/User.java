@@ -97,13 +97,4 @@ public class User implements Roled, Permissible {
         permissionsSimple.forEach((permission, value) -> this.permissions.put(Permission.of(permission), Permission.State.fromBoolean(value)));
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "discordId=" + discordId +
-                ", permissions=" + permissions +
-                ", permissionsSimple=" + permissionsSimple +
-                ", roles=" + roles +
-                '}';
-    }
 }

@@ -64,7 +64,6 @@ public class UserRegistry {
     @PreDestroy
     public void saveAll() {
         userRepository.saveAll(users.asMap().values());
-        log.info("Saved users: " + users.asMap().values());
     }
 
 }

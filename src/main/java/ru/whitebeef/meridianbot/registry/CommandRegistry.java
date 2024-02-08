@@ -1,22 +1,10 @@
 package ru.whitebeef.meridianbot.registry;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
-import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
-import ru.whitebeef.meridianbot.command.Alias;
-import ru.whitebeef.meridianbot.command.SimpleCommand;
-import ru.whitebeef.meridianbot.command.defaultcommands.HelpCommand;
-import ru.whitebeef.meridianbot.command.defaultcommands.permission.PermissionGetUserCommand;
-import ru.whitebeef.meridianbot.command.defaultcommands.permission.PermissionSetUserCommand;
-import ru.whitebeef.meridianbot.plugin.Plugin;
-import ru.whitebeef.meridianbot.plugin.PluginRegistry;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,24 +13,6 @@ import java.util.Map;
 @Log4j2
 @Component
 public class CommandRegistry {
-
-    private final PluginRegistry pluginRegistry;
-
-    private final JDA jda;
-    private final UserRegistry userRegistry;
-
-    private final RoleRegistry roleRegistry;
-    private final ApplicationContext context;
-
-    @Autowired
-    public CommandRegistry(PluginRegistry pluginRegistry, JDA jda, UserRegistry userRegistry, RoleRegistry roleRegistry, ApplicationContext context) {
-        this.pluginRegistry = pluginRegistry;
-        this.jda = jda;
-        this.userRegistry = userRegistry;
-        this.roleRegistry = roleRegistry;
-        this.context = context;
-    }
-
 
     private final Map<String, AbstractCommand> commandMap = new HashMap<>();
     private final Map<String, AbstractCommand> aliasesCommandMap = new HashMap<>();
@@ -74,64 +44,5 @@ public class CommandRegistry {
         }
     }
 
-    @PostConstruct
-    private void registerCommands() {
-        AbstractCommand.builder("help", HelpCommand.class)
-                .setDescription("Команда для просмотра доступных команд")
-                .setUsageMessage("help")
-                .addAlias(Alias.of("рудз", false))
-                .build().register(this);
-
-        AbstractCommand.builder("stop", SimpleCommand.class)
-                .setDescription("Остановить сервер")
-                .setUsageMessage("stop")
-                .setOnCommand((args) -> {
-                    SpringApplication.exit(context);
-                })
-                .build().register(this);
-
-        AbstractCommand.builder("plugins", SimpleCommand.class)
-                .addAlias(Alias.of("pl", false))
-                .setDescription("Показать список плагинов")
-                .setUsageMessage("plugins")
-                .setOnCommand((args) -> {
-                    log.info("Список плагинов:");
-                    for (Plugin plugin : pluginRegistry.getLoadedPlugins()) {
-                        log.info(plugin.getInfo().getName() + ": " + (plugin.isEnabled() ? "✓" : "×"));
-                    }
-                })
-                .build().register(this);
-        AbstractCommand.builder("cache", SimpleCommand.class)
-                .addSubCommand(AbstractCommand.builder("get", SimpleCommand.class)
-                        .addSubCommand(AbstractCommand.builder("users", SimpleCommand.class)
-                                .setOnCommand(args -> {
-                                    log.info("Загруженные пользователи:");
-                                    userRegistry.getLoadedUsers().forEach(user -> log.info(user.getDiscordId() + ": " + jda.getUserById(user.getDiscordId())));
-                                    log.info("Всего: " + userRegistry.getLoadedUsers().size() + " пользователей");
-                                })
-                                .build())
-                        .addSubCommand(AbstractCommand.builder("roles", SimpleCommand.class)
-                                .setOnCommand(args -> {
-                                    log.info("Загруженные роли:");
-                                    roleRegistry.getLoadedRoles()
-                                            .forEach(role -> {
-                                                log.info(role.getName() + ":");
-                                                role.getPermissions().forEach((key, value) -> log.info((value.toBoolean() ? "+ '" : "- '") + key.getPermission() + "'"));
-                                            });
-                                    log.info("Всего: " + roleRegistry.getLoadedRoles().size() + " ролей");
-                                })
-                                .build())
-                        .build())
-                .setDescription("Просмотр кэша")
-                .setUsageMessage("cache get <users|roles>")
-                .build().register(this);
-
-        AbstractCommand.builder("permission", SimpleCommand.class)
-                .addSubCommand(AbstractCommand.builder("get", PermissionGetUserCommand.class).build())
-                .addSubCommand(AbstractCommand.builder("set", PermissionSetUserCommand.class).build())
-                .setDescription("Управление правами")
-                .setUsageMessage("permission <get|set>")
-                .build().register(this);
-    }
 
 }
