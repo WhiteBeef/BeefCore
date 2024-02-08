@@ -12,10 +12,10 @@ public interface Permissible {
 
     default boolean hasPermission(@NotNull Permission permission) {
 
-        Permission.State stateInRoles = Permission.State.NOT_FOUND;
+        Permission.State stateInRoles = Permission.State.NOT_SET;
         if (this instanceof Roled roled) {
             for (Role role : roled.getRoles()) {
-                Permission.State tempState = role.getStateOfRemission(permission);
+                Permission.State tempState = role.getPermissionState(permission);
                 if (tempState == Permission.State.DENIED) {
                     return false;
                 } else if (tempState == Permission.State.ALLOWED) {
@@ -24,23 +24,23 @@ public interface Permissible {
             }
         }
 
-        Permission.State stateInPermissible = getStateOfRemission(permission);
+        Permission.State stateInPermissible = getPermissionState(permission);
 
         return switch (stateInRoles) {
             case ALLOWED -> stateInPermissible.isAllowed() || stateInPermissible.isNotFound();
-            case NOT_FOUND -> stateInPermissible.isAllowed();
+            case NOT_SET -> stateInPermissible.isAllowed();
             default -> false;
         };
     }
 
-    default Permission.State getStateOfRemission(Permission permission) {
+    default Permission.State getPermissionState(Permission permission) {
         if (getPermissions().containsKey(Permission.getStarPermission())) {
             return getPermissions().get(Permission.getStarPermission());
         }
 
         if (!getPermissions().containsKey(permission)) {
             if (permission.getParent() == null) {
-                return Permission.State.NOT_FOUND;
+                return Permission.State.NOT_SET;
             }
             Permission tempPermission = permission.getParent();
             while (tempPermission.getParent() != null) {
@@ -51,7 +51,7 @@ public interface Permissible {
                 }
                 tempPermission = tempPermission.getParent();
             }
-            return Permission.State.NOT_FOUND;
+            return Permission.State.NOT_SET;
         } else {
             return getPermissions().get(permission);
         }

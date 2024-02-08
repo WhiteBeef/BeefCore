@@ -8,12 +8,13 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.Alias;
 import ru.whitebeef.meridianbot.command.SimpleCommand;
 import ru.whitebeef.meridianbot.command.defaultcommands.HelpCommand;
+import ru.whitebeef.meridianbot.command.defaultcommands.permission.PermissionGetUserCommand;
+import ru.whitebeef.meridianbot.command.defaultcommands.permission.PermissionSetUserCommand;
 import ru.whitebeef.meridianbot.plugin.Plugin;
 import ru.whitebeef.meridianbot.plugin.PluginRegistry;
 
@@ -121,6 +122,11 @@ public class CommandRegistry {
                                 })
                                 .build())
                         .build())
+                .build().register(this);
+
+        AbstractCommand.builder("permission", SimpleCommand.class)
+                .addSubCommand(AbstractCommand.builder("get", PermissionGetUserCommand.class).build())
+                .addSubCommand(AbstractCommand.builder("set", PermissionSetUserCommand.class).build())
                 .build().register(this);
     }
 

@@ -61,7 +61,7 @@ public class User implements Roled, Permissible {
     @Override
     public void setPermission(@NotNull Permission permission, @Nullable Boolean state) {
         if (state == null) {
-            setPermission(permission, Permission.State.NOT_FOUND);
+            setPermission(permission, Permission.State.NOT_SET);
         } else if (state) {
             setPermission(permission, Permission.State.ALLOWED);
         } else {
@@ -83,5 +83,6 @@ public class User implements Roled, Permissible {
     public void removeRole(Role role) {
         this.roles.remove(role);
     }
+
 
 }

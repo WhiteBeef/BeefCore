@@ -42,30 +42,35 @@ public class PluginRegistry {
         enablePlugins();
     }
 
-    public void loadPlugin(PluginClassLoader pluginClassLoader) throws PluginAlreadyLoadedException, ClassNotFoundException {
-        PluginInfo info = pluginClassLoader.getInfo();
-        String lowerPluginName = info.getName().toLowerCase();
-        if (plugins.containsKey(lowerPluginName)) {
-            throw new PluginAlreadyLoadedException(info);
-        }
+    public void loadPlugin(PluginClassLoader pluginClassLoader) {
+        try {
+            PluginInfo info = pluginClassLoader.getInfo();
+            String lowerPluginName = info.getName().toLowerCase();
+            if (plugins.containsKey(lowerPluginName)) {
+                throw new PluginAlreadyLoadedException(info);
+            }
 
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.setClassLoader(pluginClassLoader);
-        applicationContext.setParent(this.applicationContext);
-        applicationContext.scan(info.getMainClassPath().substring(0, info.getMainClassPath().lastIndexOf('.')));
-        StringBuilder beanName = new StringBuilder(info.getName());
-        beanName.setCharAt(0, Character.toLowerCase(beanName.charAt(0)));
-        applicationContext.registerBean(pluginClassLoader.findClass(info.getMainClassPath()), info, pluginClassLoader);
+            AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+            applicationContext.setClassLoader(pluginClassLoader);
+            applicationContext.setParent(this.applicationContext);
+            applicationContext.scan(info.getMainClassPath().substring(0, info.getMainClassPath().lastIndexOf('.')));
+            StringBuilder beanName = new StringBuilder(info.getName());
+            beanName.setCharAt(0, Character.toLowerCase(beanName.charAt(0)));
+            applicationContext.registerBean(pluginClassLoader.findClass(info.getMainClassPath()), info, pluginClassLoader);
 
 
-        applicationContext.refresh();
-        Plugin plugin = (Plugin) applicationContext.getBean(beanName.toString());
+            applicationContext.refresh();
+            Plugin plugin = (Plugin) applicationContext.getBean(beanName.toString());
 
-        plugins.put(lowerPluginName, plugin);
-        plugin.onLoad();
+            plugins.put(lowerPluginName, plugin);
+            plugin.onLoad();
 
-        if (plugin instanceof BeefPlugin beefPlugin) {
-             beefPlugin.saveDefaultConfig();
+            if (plugin instanceof BeefPlugin beefPlugin) {
+                beefPlugin.saveDefaultConfig();
+            }
+        } catch (Exception exception) {
+            log.error("Ошибка при загрузке плагина " + pluginClassLoader.getInfo().getName() + "!");
+            exception.printStackTrace();
         }
     }
 
@@ -88,13 +93,19 @@ public class PluginRegistry {
 
             File[] files = pluginsFolderPath.toFile().listFiles((dir, name) -> name.toLowerCase().endsWith(".jar"));
 
+
             for (File file : files) {
-                PluginClassLoader pluginClassLoader = new PluginClassLoader(this, file.toPath());
-                loadPlugin(pluginClassLoader);
+                try {
+                    PluginClassLoader pluginClassLoader = new PluginClassLoader(this, file.toPath());
+                    loadPlugin(pluginClassLoader);
+                } catch (Exception exception) {
+                    log.error("Ошибка во время регистрации плагина: " + file.getName());
+                    exception.printStackTrace();
+                }
             }
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (Exception exception) {
+            throw new RuntimeException(exception);
         }
     }
 

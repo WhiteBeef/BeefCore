@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +26,7 @@ import java.nio.file.StandardCopyOption;
 @Log4j2
 @SpringBootApplication
 public class MeridianBot {
+
 
     public static void main(String[] args) {
         SpringApplication.run(MeridianBot.class, args);
@@ -48,13 +50,13 @@ public class MeridianBot {
 
 
     @Bean
-    public JDA startJDA() {
+    public JDA startJDA() throws InterruptedException {
         JDABuilder builder = JDABuilder.createDefault(config.get("token").getAsString())
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                 .enableCache(CacheFlag.ACTIVITY)
                 .setActivity(Activity.watching("на БиБиф'а"));
-        return builder.build();
+        return builder.build().awaitReady();
     }
 
     @Bean

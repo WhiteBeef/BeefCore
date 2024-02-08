@@ -77,7 +77,7 @@ public class Role implements Permissible {
     @Override
     public void setPermission(@NotNull Permission permission, @Nullable Boolean state) {
         if (state == null) {
-            setPermission(permission, Permission.State.NOT_FOUND);
+            setPermission(permission, Permission.State.NOT_SET);
         } else if (state) {
             setPermission(permission, Permission.State.ALLOWED);
         } else {

@@ -13,18 +13,22 @@ import java.util.Objects;
 public class Permission {
     @RegExp
     private static final String PERMISSION_FORMAT = "(?:(?:\\*)/(?:[a-z0-9_]+(?:\\.[a-z0-9_]+)*(?:\\.\\*)?))";
+    @Getter
     private static final Map<String, Permission> registeredPermissions = new HashMap<>();
     @Getter
     private static final Permission starPermission = Permission.of("*");
 
     public static Permission of(@NotNull String permission) {
-        return registeredPermissions.getOrDefault(permission, new Permission(permission));
+        return registeredPermissions.getOrDefault(permission, new Permission(permission, true));
+    }
+
+    public static Permission of(@NotNull String permission, boolean register) {
+        return registeredPermissions.getOrDefault(permission, new Permission(permission, false));
     }
 
 
     @Getter
     private final String permission;
-
     @Getter
 
     private Permission parent = null;
@@ -35,19 +39,20 @@ public class Permission {
     @Getter
     private boolean rootPermission = false;
 
-    private Permission(@NotNull String permission) {
+    private Permission(@NotNull String permission, boolean register) {
         if (permission.matches(PERMISSION_FORMAT)) {
             throw new IllegalArgumentException("Invalid permission format " + permission);
         }
         this.permission = permission;
-        registeredPermissions.put(permission, this);
-
+        if (!register) {
+            registeredPermissions.put(permission, this);
+        }
         if (permission.endsWith("*")) {
             superPermission = true;
         }
         if (permission.contains(".")) {
             int index = permission.lastIndexOf('.');
-            this.parent = Permission.of(permission.substring(0, index));
+            this.parent = Permission.of(permission.substring(0, index), register);
             parent.getChildren().add(this);
 
         } else {
@@ -85,7 +90,7 @@ public class Permission {
     public enum State {
         ALLOWED,
         DENIED,
-        NOT_FOUND;
+        NOT_SET;
 
         public boolean isAllowed() {
             return this == State.ALLOWED;
@@ -103,13 +108,13 @@ public class Permission {
             return switch (this) {
                 case ALLOWED -> Boolean.TRUE;
                 case DENIED -> Boolean.FALSE;
-                case NOT_FOUND -> null;
+                case NOT_SET -> null;
             };
         }
 
         public static State fromBoolean(Boolean value) {
             if (value == null) {
-                return NOT_FOUND;
+                return NOT_SET;
             }
             if (value) {
                 return ALLOWED;

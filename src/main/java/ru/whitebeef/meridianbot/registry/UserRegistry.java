@@ -4,6 +4,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import lombok.extern.log4j.Log4j2;
+import net.dv8tion.jda.api.JDA;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,10 +23,11 @@ public class UserRegistry {
     private final LoadingCache<Long, User> users;
     private final UserRepository userRepository;
     private final UserLoader userLoader;
-
+    private final JDA jda;
 
     @Autowired
-    public UserRegistry(UserRepository userRepository, UserLoader userLoader, RemovalListener<Long, User> userRemovalListener) {
+    public UserRegistry(JDA jda, UserRepository userRepository, UserLoader userLoader, RemovalListener<Long, User> userRemovalListener) {
+        this.jda = jda;
         this.users = CacheBuilder.newBuilder()
                 .expireAfterAccess(10, TimeUnit.MINUTES)
                 .removalListener(userRemovalListener)
@@ -48,6 +50,10 @@ public class UserRegistry {
 
         users.put(discordUser.getIdLong(), userLoader.getDefaultUser(discordUser.getIdLong()));
         return users.getUnchecked(discordUser.getIdLong());
+    }
+
+    public net.dv8tion.jda.api.entities.User getDiscordUserByUser(@NotNull User discordUser) {
+        return jda.getUserById(discordUser.getDiscordId());
     }
 
     public Collection<User> getLoadedUsers() {
