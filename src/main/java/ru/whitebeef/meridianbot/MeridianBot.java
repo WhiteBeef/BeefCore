@@ -20,9 +20,15 @@ import ru.whitebeef.meridianbot.utils.GsonUtils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
+@Getter
 @Log4j2
 @SpringBootApplication
 public class MeridianBot {
@@ -32,17 +38,15 @@ public class MeridianBot {
         SpringApplication.run(MeridianBot.class, args);
     }
 
-    @Getter
     private final File mainFolder;
-    @Getter
     private final JsonObject config;
 
 
     public MeridianBot() {
         try {
             this.mainFolder = loadMainFolder();
-            this.config = loadConfig(mainFolder);
-        } catch (IOException exception) {
+            this.config = loadConfig();
+        } catch (IOException | URISyntaxException exception) {
             log.error(exception);
             throw new RuntimeException();
         }
@@ -69,10 +73,10 @@ public class MeridianBot {
     }
 
 
-    public JsonObject loadConfig(File mainFolder) throws IOException {
+    public JsonObject loadConfig() throws IOException, URISyntaxException {
         File config = ResourceUtils.getFile("file:./config.json");
         if (!config.exists()) {
-            Files.copy(ResourceUtils.getFile("jar:config.json").toPath(), mainFolder.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(getClass().getClassLoader().getResourceAsStream("./config.json"), config.toPath());
             config = ResourceUtils.getFile("file:./config.json");
         }
         return GsonUtils.getJsonObject(config).getAsJsonObject();

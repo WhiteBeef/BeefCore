@@ -18,20 +18,16 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+@Getter
 public abstract class BeefPlugin implements Plugin {
 
     @NotNull
-    @Getter
     private final PluginInfo info;
-    @Getter
     @NotNull
     private final File dataFolder;
 
-    @Getter
     private final PluginClassLoader pluginClassLoader;
-    @Getter
     private final ApplicationContext pluginApplicationContext;
-    @Getter
     @Setter
     private boolean enabled;
 
