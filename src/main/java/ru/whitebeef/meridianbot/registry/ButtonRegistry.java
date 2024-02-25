@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonInteraction;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,14 +18,14 @@ import java.util.function.Consumer;
 @Component
 public class ButtonRegistry extends ListenerAdapter {
 
-    private final Map<Button, Pair<String, Consumer<Button>>> buttons = new WeakHashMap<>();
+    private final Map<Button, Pair<String, Consumer<ButtonInteraction>>> buttons = new WeakHashMap<>();
 
     @Autowired
     public ButtonRegistry(JDA jda) {
         jda.addEventListener(this);
     }
 
-    public void registerButton(@NotNull Plugin plugin, @NotNull Button button, @NotNull Consumer<Button> onClick) {
+    public void registerButton(@NotNull Plugin plugin, @NotNull Button button, @NotNull Consumer<ButtonInteraction> onClick) {
         if (buttons.containsKey(button)) {
             throw new IllegalArgumentException("Button already registered!");
         }
@@ -36,7 +37,7 @@ public class ButtonRegistry extends ListenerAdapter {
         if (!buttons.containsKey(button)) {
             return;
         }
-        buttons.get(button).right().accept(button);
+        buttons.get(button).right().accept(event.getInteraction());
     }
 
 }
