@@ -53,8 +53,9 @@ public class AbstractDiscordSlashCommand implements DiscordCommandExecutor, Disc
         event.reply(NO_BEHAVIOR).queue();
     }
 
-    public void register(DiscordSlashCommandRegistry registry) {
+    public AbstractDiscordSlashCommand register(DiscordSlashCommandRegistry registry) {
         registry.registerCommand(this);
+        return this;
     }
 
     @Override
