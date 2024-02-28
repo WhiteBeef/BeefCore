@@ -16,4 +16,7 @@ public interface PluginInfo {
     @NotNull
     String[] getSoftDepends();
 
+    @NotNull
+    String getVersion();
+
 }

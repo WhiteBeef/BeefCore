@@ -17,6 +17,10 @@ public class PluginInfoImpl implements PluginInfo {
 
     @NotNull
     @Getter
+    private final String version;
+
+    @NotNull
+    @Getter
     private final String[] depends;
 
     @NotNull
@@ -24,9 +28,10 @@ public class PluginInfoImpl implements PluginInfo {
     private final String[] softDepends;
 
 
-    public PluginInfoImpl(@NotNull String name, @NotNull String mainClassPath, @NotNull String[] depends, @NotNull String[] softDepends) {
+    public PluginInfoImpl(@NotNull String name, @NotNull String mainClassPath, @NotNull String version, @NotNull String[] depends, @NotNull String[] softDepends) {
         this.name = name;
         this.mainClassPath = mainClassPath;
+        this.version = version;
         this.depends = depends;
         this.softDepends = softDepends;
     }
@@ -34,6 +39,7 @@ public class PluginInfoImpl implements PluginInfo {
     public PluginInfoImpl(JsonObject jsonObject) {
         this.name = jsonObject.get("name").getAsString();
         this.mainClassPath = jsonObject.get("mainClass").getAsString();
+        this.version = jsonObject.get("version").getAsString();
 
         if (jsonObject.has("depends") && jsonObject.get("depends").isJsonArray()) {
             JsonArray array = jsonObject.getAsJsonArray("depends");
