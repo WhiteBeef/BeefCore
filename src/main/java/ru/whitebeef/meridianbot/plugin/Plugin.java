@@ -1,6 +1,7 @@
 package ru.whitebeef.meridianbot.plugin;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationContext;
 
@@ -22,7 +23,7 @@ public interface Plugin {
     JarFile getJarFile();
 
     @NotNull
-    JsonElement getConfig();
+    JsonObject getConfig();
 
     boolean isEnabled();
 

@@ -10,7 +10,7 @@ test {
 }
 
 group = 'ru.whitebeef'
-version = '1.5.2'
+version = '1.5.4'
 mainClassName = 'ru.whitebeef.meridianbot.MeridianBot'
 
 compileJava.options.encoding = 'UTF-8'

@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 @Component
 public class ButtonRegistry extends ListenerAdapter {
 
-    private final Map<Button, Pair<String, Consumer<ButtonInteraction>>> buttons = new WeakHashMap<>();
+    private final Map<String, Pair<String, Consumer<ButtonInteraction>>> buttons = new WeakHashMap<>();
 
     @Autowired
     public ButtonRegistry(JDA jda) {
@@ -26,18 +26,19 @@ public class ButtonRegistry extends ListenerAdapter {
     }
 
     public void registerButton(@NotNull Plugin plugin, @NotNull Button button, @NotNull Consumer<ButtonInteraction> onClick) {
-        if (buttons.containsKey(button)) {
-            throw new IllegalArgumentException("Button already registered!");
+        if (buttons.containsKey(button.getId())) {
+            throw new IllegalArgumentException("Button id already registered!");
         }
-        buttons.put(button, new Pair<>(plugin.getInfo().getName().toLowerCase(), onClick));
+        buttons.put(button.getId(), new Pair<>(plugin.getInfo().getName().toLowerCase(), onClick));
     }
 
+    @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         Button button = event.getButton();
-        if (!buttons.containsKey(button)) {
+        if (!buttons.containsKey(button.getId())) {
             return;
         }
-        buttons.get(button).right().accept(event.getInteraction());
+        buttons.get(button.getId()).right().accept(event.getInteraction());
     }
 
 }

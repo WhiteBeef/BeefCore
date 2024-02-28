@@ -1,6 +1,5 @@
 package ru.whitebeef.meridianbot.plugin;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
@@ -84,9 +83,9 @@ public abstract class BeefPlugin implements Plugin {
     }
 
     @Override
-    public @NotNull JsonElement getConfig() {
+    public @NotNull JsonObject getConfig() {
         try {
-            return GsonUtils.getJsonObject(ResourceUtils.getFile("file:" + dataFolder.getAbsolutePath() + "/config.json"));
+            return GsonUtils.getJsonObject(ResourceUtils.getFile("file:" + dataFolder.getAbsolutePath() + "/config.json")).getAsJsonObject();
         } catch (Exception ignored) {
         }
         return new JsonObject();
