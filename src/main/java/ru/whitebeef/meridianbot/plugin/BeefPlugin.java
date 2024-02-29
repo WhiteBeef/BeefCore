@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
 import ru.whitebeef.meridianbot.utils.GsonUtils;
@@ -26,11 +26,11 @@ public abstract class BeefPlugin implements Plugin {
     private final File dataFolder;
 
     private final PluginClassLoader pluginClassLoader;
-    private final ApplicationContext pluginApplicationContext;
+    private final GenericApplicationContext pluginApplicationContext;
     @Setter
     private boolean enabled;
 
-    public BeefPlugin(@NotNull PluginInfo info, @NotNull PluginClassLoader pluginClassLoader, @NotNull ApplicationContext pluginApplicationContext) {
+    public BeefPlugin(@NotNull PluginInfo info, @NotNull PluginClassLoader pluginClassLoader, @NotNull GenericApplicationContext pluginApplicationContext) {
         this.info = info;
         this.dataFolder = new File(pluginClassLoader.getDataFolderPath().toAbsolutePath() + "/");
         this.pluginApplicationContext = pluginApplicationContext;

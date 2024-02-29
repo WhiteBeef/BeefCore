@@ -24,7 +24,7 @@ public class PluginsCommandRegistrar {
     }
 
     @PostConstruct
-    public void registerCommand(){
+    public void registerCommand() {
         AbstractCommand.builder("plugins", SimpleCommand.class)
                 .addAlias(Alias.of("pl", false))
                 .setDescription("Показать список плагинов")
