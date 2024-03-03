@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.context.ApplicationContext;
 import ru.whitebeef.meridianbot.command.AbstractCommand;
 import ru.whitebeef.meridianbot.command.Alias;
-import ru.whitebeef.meridianbot.command.StandardConsumers;
+import ru.whitebeef.meridianbot.command.DefaultConsumers;
 import ru.whitebeef.meridianbot.entities.Permission;
 import ru.whitebeef.meridianbot.provider.ApplicationContextProvider;
 import ru.whitebeef.meridianbot.registry.UserRegistry;
@@ -33,7 +33,7 @@ public class PermissionSetUserCommand extends AbstractCommand {
 
         ApplicationContext applicationContext = ApplicationContextProvider.getContext();
         if (args.length < 3) {
-            StandardConsumers.NO_ARGS.getConsumer().accept(args);
+            DefaultConsumers.NO_ARGS.getConsumer().accept(args);
             return;
         }
         JDA jda = applicationContext.getBean(JDA.class);

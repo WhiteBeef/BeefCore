@@ -5,8 +5,15 @@ import ru.whitebeef.meridianbot.repliers.Replier;
 
 public enum DefaultRepliers {
 
+
     SUCCESS((replyCallback) -> {
         replyCallback.reply("Успех!").setEphemeral(true).queue();
+    }),
+    COMMAND_NOT_FOUND((replyCallback) -> {
+        replyCallback.reply("Команда не найдена!").setEphemeral(true).queue();
+    }),
+    NO_PERMISSION((replyCallback) -> {
+        replyCallback.reply("Недостаточно прав!").setEphemeral(true).queue();
     });
 
     private final Replier replier;

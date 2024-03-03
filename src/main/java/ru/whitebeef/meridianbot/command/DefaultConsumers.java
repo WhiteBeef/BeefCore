@@ -1,11 +1,13 @@
 package ru.whitebeef.meridianbot.command;
 
+import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.function.Consumer;
 
+@Getter
 @Log4j2
-public enum StandardConsumers {
+public enum DefaultConsumers {
 
 
     NO_ARGS((args) -> {
@@ -15,11 +17,8 @@ public enum StandardConsumers {
     private final Consumer<String[]> consumer;
 
 
-    StandardConsumers(Consumer<String[]> consumer) {
+    DefaultConsumers(Consumer<String[]> consumer) {
         this.consumer = consumer;
     }
 
-    public Consumer<String[]> getConsumer() {
-        return consumer;
-    }
 }

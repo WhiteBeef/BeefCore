@@ -7,12 +7,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.meridianbot.command.discord.AbstractDiscordSlashCommand;
 import ru.whitebeef.meridianbot.entities.User;
+import ru.whitebeef.meridianbot.repliers.impl.DefaultRepliers;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +20,6 @@ import java.util.Map;
 @Log4j2
 @Component
 public class DiscordSlashCommandRegistry extends ListenerAdapter {
-    private static final MessageCreateData COMMAND_NOT_FOUND = MessageCreateData.fromContent("Команда не найдена!");
-    private static final MessageCreateData NO_PERMISSIONS = MessageCreateData.fromContent("Недостаточно прав!");
 
 
     private final Guild guild;
@@ -49,14 +47,14 @@ public class DiscordSlashCommandRegistry extends ListenerAdapter {
         AbstractDiscordSlashCommand command = commands.get(event.getName());
 
         if (command == null) {
-            event.reply(COMMAND_NOT_FOUND).queue();
+            DefaultRepliers.COMMAND_NOT_FOUND.reply(event);
             return;
         }
 
         User user = userRegistry.getUserByDiscordUser(event.getUser());
 
         if (!user.hasPermission(command.getPermission())) {
-            event.reply(NO_PERMISSIONS).queue();
+            DefaultRepliers.NO_PERMISSION.reply(event);
             return;
         }
         command.onSlashCommandInteraction(event);

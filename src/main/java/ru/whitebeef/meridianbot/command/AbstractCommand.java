@@ -76,7 +76,7 @@ public class AbstractCommand {
     }
 
     protected void onCommand(String[] args) {
-        StandardConsumers.NO_ARGS.getConsumer().accept(args);
+        DefaultConsumers.NO_ARGS.getConsumer().accept(args);
     }
 
     protected List<String> onTabComplete(String[] args) {
@@ -94,7 +94,7 @@ public class AbstractCommand {
         args = Arrays.stream(args).skip(pair.left()).toArray(String[]::new);
 
         if (args.length < currentCommand.getMinArgsCount()) {
-            StandardConsumers.NO_ARGS.getConsumer().accept(args);
+            DefaultConsumers.NO_ARGS.getConsumer().accept(args);
             return;
         }
 
