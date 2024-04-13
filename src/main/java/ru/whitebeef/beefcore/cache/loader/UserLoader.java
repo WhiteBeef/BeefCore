@@ -22,12 +22,12 @@ public class UserLoader extends CacheLoader<Long, User> {
 
     @Override
     public User load(@NotNull Long discordId) {
-        return userRepository.getUserByDiscordId(discordId).orElseGet(() -> getDefaultUser(discordId));
+        return userRepository.getUserById(discordId).orElseGet(() -> getDefaultUser(discordId));
     }
 
-    public User getDefaultUser(Long discordId) {
+    public User getDefaultUser(Long id) {
         User user = new User();
-        user.setDiscordId(discordId);
+        user.setId(id);
         user.setRoles(Set.of(RoleRegistry.of("default")));
         return userRepository.save(user);
     }

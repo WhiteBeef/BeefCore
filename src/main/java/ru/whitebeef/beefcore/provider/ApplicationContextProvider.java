@@ -14,14 +14,14 @@ public class ApplicationContextProvider implements ApplicationContextAware {
     @Getter
     private static ApplicationContext context;
 
+    public static AnnotationConfigApplicationContext getAnnotationConfigApplicationContext() {
+        return (AnnotationConfigApplicationContext) context;
+    }
+
     @Override
     @Autowired
     public void setApplicationContext(@NotNull ApplicationContext applicationContext)
             throws BeansException {
         context = applicationContext;
-    }
-
-    public static AnnotationConfigApplicationContext getAnnotationConfigApplicationContext() {
-        return (AnnotationConfigApplicationContext) context;
     }
 }

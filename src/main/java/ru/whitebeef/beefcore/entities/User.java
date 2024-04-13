@@ -1,14 +1,6 @@
 package ru.whitebeef.beefcore.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PostLoad;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,15 +17,14 @@ import java.util.Set;
 @Table(name = "Users")
 public class User implements Roled, Permissible {
 
+    @Getter
+    @Transient
+    private final Map<Permission, Permission.State> permissions = new HashMap<>();
     @Id
     @Getter
     @Setter
     @Column(unique = true, nullable = false)
-    private Long discordId;
-    @Getter
-    @Transient
-    private final Map<Permission, Permission.State> permissions = new HashMap<>();
-
+    private Long id;
     @Getter
     @ElementCollection(fetch = FetchType.EAGER)
     @Column(name = "permissions")

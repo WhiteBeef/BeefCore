@@ -4,11 +4,7 @@ import lombok.Getter;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Permission {
     @RegExp
@@ -17,28 +13,16 @@ public class Permission {
     private static final Map<String, Permission> registeredPermissions = new HashMap<>();
     @Getter
     private static final Permission starPermission = Permission.of("*");
-
-    public static Permission of(@NotNull String permission) {
-        return registeredPermissions.getOrDefault(permission, new Permission(permission, true));
-    }
-
-    public static Permission of(@NotNull String permission, boolean register) {
-        return registeredPermissions.getOrDefault(permission, new Permission(permission, false));
-    }
-
-
     @Getter
     private final String permission;
+    private final List<Permission> child = new ArrayList<>();
     @Getter
 
     private Permission parent = null;
-
-    private final List<Permission> child = new ArrayList<>();
     @Getter
     private boolean superPermission = false;
     @Getter
     private boolean rootPermission = false;
-
     private Permission(@NotNull String permission, boolean register) {
         if (permission.matches(PERMISSION_FORMAT)) {
             throw new IllegalArgumentException("Invalid permission format " + permission);
@@ -58,6 +42,14 @@ public class Permission {
         } else {
             rootPermission = true;
         }
+    }
+
+    public static Permission of(@NotNull String permission) {
+        return registeredPermissions.getOrDefault(permission, new Permission(permission, true));
+    }
+
+    public static Permission of(@NotNull String permission, boolean register) {
+        return registeredPermissions.getOrDefault(permission, new Permission(permission, false));
     }
 
     public List<Permission> getChildren() {
@@ -92,6 +84,16 @@ public class Permission {
         DENIED,
         NOT_SET;
 
+        public static State fromBoolean(Boolean value) {
+            if (value == null) {
+                return NOT_SET;
+            }
+            if (value) {
+                return ALLOWED;
+            }
+            return DENIED;
+        }
+
         public boolean isAllowed() {
             return this == State.ALLOWED;
         }
@@ -110,16 +112,6 @@ public class Permission {
                 case DENIED -> Boolean.FALSE;
                 case NOT_SET -> null;
             };
-        }
-
-        public static State fromBoolean(Boolean value) {
-            if (value == null) {
-                return NOT_SET;
-            }
-            if (value) {
-                return ALLOWED;
-            }
-            return DENIED;
         }
     }
 

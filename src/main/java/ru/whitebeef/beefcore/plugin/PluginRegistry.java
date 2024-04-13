@@ -25,11 +25,10 @@ import java.util.*;
 @Component
 public class PluginRegistry {
 
-    private final Map<String, PluginClassLoader> pluginsToLoad = new HashMap<>();
     protected final Map<String, Plugin> plugins = new HashMap<>();
     protected final Map<Class<? extends BeefPlugin>, Plugin> classToPlugins = new HashMap<>();
     protected final Map<String, Class<?>> classes = new HashMap<>();
-
+    private final Map<String, PluginClassLoader> pluginsToLoad = new HashMap<>();
     private final BeefCore beefCore;
     private final AnnotationConfigApplicationContext applicationContext;
 

@@ -3,16 +3,8 @@ package ru.whitebeef.beefcore;
 import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.utils.MemberCachePolicy;
-import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.util.ResourceUtils;
 import ru.whitebeef.beefcore.utils.GsonUtils;
 
@@ -28,14 +20,8 @@ import java.nio.file.Files;
 public class BeefCore {
 
 
-    public static void main(String[] args) {
-        SpringApplication.run(BeefCore.class, args);
-    }
-
     private final File mainFolder;
     private final JsonObject config;
-
-
     public BeefCore() {
         try {
             this.mainFolder = loadMainFolder();
@@ -46,20 +32,8 @@ public class BeefCore {
         }
     }
 
-
-    @Bean
-    public JDA startJDA() throws InterruptedException {
-        JDABuilder builder = JDABuilder.createDefault(config.get("token").getAsString())
-                .setMemberCachePolicy(MemberCachePolicy.ALL)
-                .setEnabledIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
-                .enableCache(CacheFlag.ACTIVITY)
-                .setActivity(Activity.watching("на БиБиф'а"));
-        return builder.build().awaitReady();
-    }
-
-    @Bean
-    public Guild connectToGuild(JDA jda) {
-        return jda.getGuildById(config.get("guild_id").getAsString());
+    public static void main(String[] args) {
+        SpringApplication.run(BeefCore.class, args);
     }
 
     public File loadMainFolder() throws FileNotFoundException {

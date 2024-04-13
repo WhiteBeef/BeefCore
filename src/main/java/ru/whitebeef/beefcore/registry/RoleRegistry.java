@@ -16,24 +16,12 @@ import ru.whitebeef.beefcore.utils.Pair;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 @Component
 public class RoleRegistry {
     private static RoleRegistry instance;
-
-    public static @NotNull Role of(String name, Pair<Permission, Permission.State>... permissions) {
-        if (instance.registeredRoles.containsKey(name)) {
-            if (permissions.length > 0) {
-                throw new IllegalArgumentException("Group with name " + name + " is already registered!");
-            }
-            return instance.registeredRoles.get(name);
-        }
-        return new Role(instance, name, permissions);
-    }
-
     private final Map<String, Role> registeredRoles = new HashMap<>();
-
     private final RoleRepository roleRepository;
-
 
     @Autowired
     public RoleRegistry(RoleRepository roleRepository, BeefCore beefCore) {
@@ -49,6 +37,16 @@ public class RoleRegistry {
             role.setPermissionsSimple(roleDTO.getPermissions());
             registeredRoles.put(roleDTO.getName(), role);
         });
+    }
+
+    public static @NotNull Role of(String name, Pair<Permission, Permission.State>... permissions) {
+        if (instance.registeredRoles.containsKey(name)) {
+            if (permissions.length > 0) {
+                throw new IllegalArgumentException("Group with name " + name + " is already registered!");
+            }
+            return instance.registeredRoles.get(name);
+        }
+        return new Role(instance, name, permissions);
     }
 
     public void registerRole(Role role) {

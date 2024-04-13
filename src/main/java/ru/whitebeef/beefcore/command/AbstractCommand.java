@@ -8,22 +8,12 @@ import ru.whitebeef.beefcore.registry.CommandRegistry;
 import ru.whitebeef.beefcore.utils.Pair;
 import ru.whitebeef.beefcore.utils.StringsUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Log4j2
 public class AbstractCommand {
-
-    public static Builder builder(String name, Class<? extends AbstractCommand> clazz) {
-        return new Builder(name, clazz);
-    }
 
     @Getter
     private final String name;
@@ -40,7 +30,6 @@ public class AbstractCommand {
     private final List<Alias> aliases;
     @Getter
     private final int minArgsCount;
-
     @Getter
     private CommandRegistry commandRegistry;
 
@@ -56,6 +45,10 @@ public class AbstractCommand {
         this.onTabComplete = onTabComplete;
         this.subCommands = subCommands;
         this.minArgsCount = minArgsCount;
+    }
+
+    public static Builder builder(String name, Class<? extends AbstractCommand> clazz) {
+        return new Builder(name, clazz);
     }
 
     public final AbstractCommand addSubCommand(AbstractCommand abstractCommand) {
@@ -117,7 +110,7 @@ public class AbstractCommand {
         } else {
 
             AbstractCommand subcommand = null;
-            if(args.length>0){
+            if (args.length > 0) {
                 subcommand = this.getSubcommand(args[0]);
             }
             if (subcommand != null) {
