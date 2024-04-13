@@ -10,12 +10,12 @@ test {
 }
 
 group = 'ru.whitebeef'
-version = '1.6.1'
-mainClassName = 'ru.whitebeef.meridianbot.MeridianBot'
+version = '1.6.10'
+mainClassName = 'ru.whitebeef.beefcore.BeefCore'
 
 compileJava.options.encoding = 'UTF-8'
 
-def destinationDir = file("C:\\MeridianBot\\$project.name")
+def destinationDir = file("C:\\BeefCore\\$project.name")
 def jarName = project.name + '.jar';
 def versionJarName = project.name + '-' + project.version + '.jar';
 
