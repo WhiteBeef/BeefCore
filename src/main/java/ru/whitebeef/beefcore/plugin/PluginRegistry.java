@@ -10,8 +10,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultSingletonBeanRegistry;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.beefcore.BeefCore;
 import ru.whitebeef.beefcore.exceptions.plugin.PluginAlreadyLoadedException;
@@ -24,6 +25,7 @@ import java.util.*;
 
 @Log4j2
 @Component
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class PluginRegistry {
 
     protected final Map<String, Plugin> plugins = new HashMap<>();
@@ -78,6 +80,9 @@ public class PluginRegistry {
                     }
                     BeanDefinition beanDefinition = parentDefinitionRegistry.getBeanDefinition(bean);
 
+                    if (beanDefinition.getBeanClassName() == null) {
+                        continue;
+                    }
                     Field resolvableDependenciesField = DefaultListableBeanFactory.class.getDeclaredField("resolvableDependencies");
                     Field beanDefinitionNamesField = DefaultListableBeanFactory.class.getDeclaredField("beanDefinitionNames");
                     Field singletonBeanNamesByTypeField = DefaultListableBeanFactory.class.getDeclaredField("singletonBeanNamesByType");
