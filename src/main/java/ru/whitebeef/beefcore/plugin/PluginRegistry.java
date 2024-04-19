@@ -50,6 +50,7 @@ public class PluginRegistry {
 
     public void loadPlugin(PluginClassLoader pluginClassLoader) {
         try {
+            log.info("Плагин " + pluginClassLoader.getInfo().getName() + " загружается..");
             PluginInfo info = pluginClassLoader.getInfo();
             String lowerPluginName = info.getName().toLowerCase();
             if (plugins.containsKey(lowerPluginName)) {
@@ -138,6 +139,7 @@ public class PluginRegistry {
             if (plugin instanceof BeefPlugin beefPlugin) {
                 beefPlugin.saveDefaultConfig();
             }
+            log.info("Плагин " + pluginClassLoader.getInfo().getName() + " загружен!");
         } catch (Exception exception) {
             log.error("Ошибка при загрузке плагина " + pluginClassLoader.getInfo().getName() + "!");
             exception.printStackTrace();
@@ -174,11 +176,13 @@ public class PluginRegistry {
                 try {
                     PluginClassLoader pluginClassLoader = new PluginClassLoader(this, file.toPath());
                     pluginsToLoad.put(pluginClassLoader.getInfo().getName(), pluginClassLoader);
+                    log.info("Плагин " + pluginClassLoader.getInfo().getName() + " зарегистрирован!");
                 } catch (Exception exception) {
                     log.error("Ошибка во время регистрации плагина: " + file.getName());
                     exception.printStackTrace();
                 }
             }
+
             for (PluginClassLoader pluginClassLoader : new ArrayList<>(pluginsToLoad.values())) {
                 if (!plugins.containsKey(pluginClassLoader.getInfo().getName().toLowerCase())) {
                     loadPlugin(pluginClassLoader);
@@ -223,6 +227,7 @@ public class PluginRegistry {
         if (dependsOn) {
             plugin.onEnable();
             plugin.setEnabled(true);
+            log.info("Плагин " + plugin.getInfo().getName() + " включен!");
         } else {
             log.error("Ошибка при загрузки плагина " + plugin.getInfo().getName());
         }

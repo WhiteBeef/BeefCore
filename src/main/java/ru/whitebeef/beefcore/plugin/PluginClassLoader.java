@@ -101,6 +101,30 @@ public class PluginClassLoader extends URLClassLoader {
             }
         }
 
+        for (String pluginName : info.getDepends()) {
+            BeefPlugin beefPlugin = (BeefPlugin) registry.getPlugin(pluginName.toLowerCase());
+            if (beefPlugin == null) {
+                throw new RuntimeException("Try to load class " + name + " while dependency " + pluginName + " is not loaded");
+            }
+            JarEntry entry1 = beefPlugin.getJarFile().getJarEntry(path);
+
+            if (entry1 != null) {
+                byte[] classBytes;
+                try (InputStream in = beefPlugin.getJarFile().getInputStream(entry1)) {
+                    classBytes = in.readNBytes(in.available());
+                } catch (IOException ex) {
+                    throw new ClassNotFoundException(name, ex);
+                }
+
+                CodeSigner[] signers = entry1.getCodeSigners();
+                CodeSource source = new CodeSource(beefPlugin.getPluginClassLoader().url, signers);
+                try {
+                    c = super.defineClass(name, classBytes, 0, classBytes.length, source);
+                } catch (ClassFormatError ignored) {
+                }
+            }
+        }
+
         if (c == null) {
             c = super.findClass(name);
         }
