@@ -34,14 +34,18 @@ public class ConsoleConfigurator implements CommandLineRunner {
     public void run(String... args) {
         try (Terminal terminal = TerminalBuilder
                 .builder()
+                .dumb(true)
                 .system(true)
                 .build()) {
+
             LineReader lineReader = LineReaderBuilder
                     .builder()
                     .terminal(terminal)
                     .completer(customTabCompleter)
                     .build();
 
+            lineReader.setOpt(LineReader.Option.BRACKETED_PASTE);
+            lineReader.unsetOpt(LineReader.Option.INSERT_TAB);
             String userInput = "";
             Thread.sleep(1000);
             do {
