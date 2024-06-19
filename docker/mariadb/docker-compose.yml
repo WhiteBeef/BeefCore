@@ -7,7 +7,7 @@ services:
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: pswd
-      MYSQL_DATABASE: MeridianBot
+      MYSQL_DATABASE: BeefCore
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     volumes:

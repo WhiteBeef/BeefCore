@@ -13,6 +13,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.type.MethodMetadata;
 import org.springframework.stereotype.Component;
 import ru.whitebeef.beefcore.BeefCore;
 import ru.whitebeef.beefcore.exceptions.plugin.PluginAlreadyLoadedException;
@@ -72,6 +73,7 @@ public class PluginRegistry {
                     loadPlugin(pluginsToLoad.get(parentName));
                 }
                 Plugin parentPlugin = plugins.get(parentName.toLowerCase());
+
                 BeanDefinitionRegistry parentDefinitionRegistry = parentPlugin.getPluginApplicationContext();
                 BeanDefinitionRegistry childBeanDefinitionRegistry = ((BeanDefinitionRegistry) applicationContext.getBeanFactory());
                 String[] beanDefinitionNames = parentDefinitionRegistry.getBeanDefinitionNames();
@@ -79,10 +81,17 @@ public class PluginRegistry {
                     if (bean.startsWith("org.springframework.context")) {
                         continue;
                     }
-                    BeanDefinition beanDefinition = parentDefinitionRegistry.getBeanDefinition(bean);
 
-                    if (beanDefinition.getBeanClassName() == null) {
-                        continue;
+                    BeanDefinition beanDefinition = parentDefinitionRegistry.getBeanDefinition(bean);
+                    String className = "";
+                    if (beanDefinition.getBeanClassName() != null) {
+                        className = beanDefinition.getBeanClassName();
+                    } else {
+                        if (beanDefinition.getSource() instanceof MethodMetadata methodMetadata) {
+                            className = methodMetadata.getReturnTypeName();
+                        } else {
+                            continue;
+                        }
                     }
                     Field resolvableDependenciesField = DefaultListableBeanFactory.class.getDeclaredField("resolvableDependencies");
                     Field beanDefinitionNamesField = DefaultListableBeanFactory.class.getDeclaredField("beanDefinitionNames");
@@ -102,7 +111,7 @@ public class PluginRegistry {
                     Map<String, BeanDefinition> beanDefinitionMap = (Map<String, BeanDefinition>) beanDefinitionMapField.get(childBeanDefinitionRegistry);
                     List<String> list = (List<String>) beanDefinitionNamesField.get(childBeanDefinitionRegistry);
 
-                    Class<?> clazz = ((PluginClassLoader) parentPlugin.getClass().getClassLoader()).findClass(beanDefinition.getBeanClassName());
+                    Class<?> clazz = ((PluginClassLoader) parentPlugin.getClass().getClassLoader()).findClass(className);
                     GenericApplicationContext parentApplicationContext = plugins.get(parentName.toLowerCase()).getPluginApplicationContext();
                     String parentBeanName = parentApplicationContext.getBeanNamesForType(clazz)[0];
 
