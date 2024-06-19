@@ -126,6 +126,10 @@ public class PluginClassLoader extends URLClassLoader {
         }
 
         if (c == null) {
+            c = getParent().loadClass(name);
+        }
+
+        if (c == null) {
             c = super.findClass(name);
         }
         this.classes.put(name, c);
